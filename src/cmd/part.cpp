@@ -1,5 +1,6 @@
 #include "IrcServer.hpp"
 
+//leave one or more IRC channels.
 int IrcServer::part(User &u, const IRC::Message &m)
 {
 	if (!u.isRegistered())
