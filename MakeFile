@@ -1,0 +1,32 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    MakeFile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: fkhan <fkhan@student.42abudhabi.ae>        +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2024/01/01 18:08:21 by fkhan             #+#    #+#              #
+#    Updated: 2024/01/01 18:20:31 by fkhan            ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+NAME		= ircserv
+
+CC			= c++
+FLAGS		= -Wall -Wextra -Werror -std=c++98
+INCLUDES	= -I$()
+
+CFG_DIR		= config
+CFG_LOG		= $(CFG_DIR)/ircserv.log
+
+SSL_DIR		= ssl
+SSL_CERT	= $(SSL_DIR)/ircserv.crt
+SSL_KEY		= $(SSL_DIR)/ircserv.key
+
+BUILD_DIR	= .build
+
+LIB_DIR		= lib
+LIBTCP_DIR	= $(LIB_DIR)/libtcp
+LIBTCP		= $(LIBTCP_DIR)/libtcp.a
+
+SRC_DIR		= src
