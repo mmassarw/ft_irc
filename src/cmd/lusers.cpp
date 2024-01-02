@@ -2,6 +2,7 @@
 #include "libft.hpp"
 
 //export various statistics about the server's local user population and channel count.
+
 int IrcServer::lusers(User &u, const IRC::Message &m)
 {
 	if (!u.isRegistered())

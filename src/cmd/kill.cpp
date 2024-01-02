@@ -1,6 +1,7 @@
 #include "IrcServer.hpp"
 
 //allows an operator to forcefully terminate the connection, affecting an individual user.
+
 int IrcServer::kill(User &u, const IRC::Message &m)
 {
 	User *target;

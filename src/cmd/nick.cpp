@@ -1,6 +1,7 @@
 #include "IrcServer.hpp"
 
 //allowing a user to change their nickname.
+
 int IrcServer::nick(User &u, const IRC::Message &m)
 {
 	if (u.type() == User::SERVICE)

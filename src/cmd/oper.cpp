@@ -2,6 +2,7 @@
 #include "libft.hpp"
 
 //give operator privileges to a user.
+
 int IrcServer::oper(User &u, const IRC::Message &m)
 {
 	if (!u.isRegistered())

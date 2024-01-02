@@ -2,6 +2,7 @@
 
 //Message of the Day, allows to request and receive a text message displayed by the server 
 //upon connection, providing information, announcements ...
+
 int IrcServer::motd(User &u, const IRC::Message &m)
 {
 	if (!u.isRegistered())

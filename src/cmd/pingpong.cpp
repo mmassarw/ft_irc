@@ -1,6 +1,7 @@
 #include "IrcServer.hpp"
 
-//PING/PONG mechanism to maintain connection stability,
+//PING/PONG mechanism to maintain connection stability.
+
 int IrcServer::ping(User &u, const IRC::Message &m)
 {
 	if (!m.params().size())

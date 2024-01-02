@@ -3,6 +3,7 @@
 
 // sends information about visible channels, considering user membership and channel modes, 
 // and responds to the user with details about the channels, including the number of visible users and the channel topic.
+
 int IrcServer::list(User &u, const IRC::Message &m)
 {
 	if (!u.isRegistered())

@@ -1,6 +1,7 @@
 #include "IrcServer.hpp"
 
 //set or query modes on a user or channel.
+
 enum SwitchFlag
 {
 	/** Unset switch */

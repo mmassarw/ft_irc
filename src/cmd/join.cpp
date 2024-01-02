@@ -1,6 +1,7 @@
 #include "IrcServer.hpp"
 
 //processes user requests to join channels on an IRC server.
+
 static bool parseNextKeyParam(const std::vector<IRC::Param> &params, size_t &i, IRC::Param &dst)
 {
 	if (i >= params.size())

@@ -1,6 +1,7 @@
 #include "IrcServer.hpp"
 
 //set or unset a password for a user.
+
 int IrcServer::pass(User &u, const IRC::Message &m)
 {
 	if (u.isRegistered())

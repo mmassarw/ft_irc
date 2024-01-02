@@ -1,6 +1,7 @@
 #include "IrcServer.hpp"
 
 //invites a user to a channel, returns 0 to indicate successful execution.
+
 int IrcServer::invite(User &u, const IRC::Message &m)
 {
 	if (!u.isRegistered())

@@ -1,6 +1,7 @@
 #include "IrcServer.hpp"
 
 //reload the server configuration without restarting the entire server.
+
 int IrcServer::rehash(User &u, const IRC::Message &m)
 {
 	(void)m;

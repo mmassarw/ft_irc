@@ -2,6 +2,7 @@
 #include "libft.hpp"
 
 //providing a list of nicknames in specified channels or all channels, categorized based on their channel modes.
+
 int IrcServer::names(User &u, const IRC::Message &m)
 {
 	if (!u.isRegistered())

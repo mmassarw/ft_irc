@@ -1,6 +1,7 @@
 #include "IrcServer.hpp"
 
 //status that user may not respond immediately.
+
 int IrcServer::away(User &u, const IRC::Message &m)
 {
 	if (!u.isRegistered())

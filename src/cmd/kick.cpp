@@ -1,6 +1,7 @@
 #include "IrcServer.hpp"
 
 //handles the removal of users from one or more channels by a channel operator or creator
+
 int IrcServer::kick(User &u, const IRC::Message &m)
 {
 	if (!u.isRegistered())

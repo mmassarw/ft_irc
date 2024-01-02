@@ -2,6 +2,7 @@
 #include "libft.hpp"
 
 //allowing a user to send notices to other users, channels ...
+
 int IrcServer::notice(User &u, const IRC::Message &m)
 {
 	if (!u.isRegistered() || m.params().size() < 2)

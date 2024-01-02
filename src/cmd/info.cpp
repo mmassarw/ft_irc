@@ -1,7 +1,8 @@
 #include "IrcServer.hpp"
 #include "libft.hpp"
 
-//information about a server
+//information about a server.
+
 static const char *info[] = {
 "ircserv",
 "",

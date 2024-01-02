@@ -1,6 +1,7 @@
 #include "IrcServer.hpp"
 
 //disconnects user from the server. 
+
 int IrcServer::quit(User &u, const IRC::Message &m)
 {
 	if (!u.isRegistered() || m.params().empty())
