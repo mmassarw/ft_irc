@@ -1,19 +1,19 @@
-#include "SystemError.hpp"
+#include "logError.hpp"
 
 namespace ft
 {
-    SystemError::SystemError(const std::string &err_prefix) :
+    logError::logError(const std::string &err_prefix) :
         std::runtime_error(err_prefix + std::string(": ") + std::strerror(errno)), _code(errno)
     {}
 
-    SystemError::SystemError(const int code, const std::string &err_prefix) :
+    logError::logError(const int code, const std::string &err_prefix) :
         std::runtime_error(err_prefix + std::string(": ") + std::strerror(code)), _code(code)
     {}
 
-    SystemError::~SystemError() throw()
+    logError::~logError() throw()
     {}
 
-    int SystemError::code() const throw()
+    int logError::code() const throw()
     {
         return (_code);
     }

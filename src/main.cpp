@@ -1,8 +1,8 @@
 #include "Connection.hpp"
 
-int main()
+int main(int ac, char **av)
 {
-    Connection connection = Connection();
+    Connection connection;
 
     return (0);
 }
