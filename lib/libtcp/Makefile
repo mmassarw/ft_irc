@@ -6,7 +6,7 @@
 #    By: fkhan <fkhan@student.42abudhabi.ae>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/01 20:03:39 by fkhan             #+#    #+#              #
-#    Updated: 2024/01/01 20:54:27 by fkhan            ###   ########.fr        #
+#    Updated: 2024/01/12 20:35:16 by fkhan            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,9 +14,14 @@ NAME		= libtcp.a
 
 CXX			= c++
 CXXFLAGS 	= -Wall -Werror -Wextra -std=c++98
-INCFLAGS 	= -I$(INC_DIR)
+INCFLAGS 	= -I$(INC_DIR) -I$(LIBFT_INC)
 
 LIB			= ar -rcs
+
+LIB_DIR		= ../
+
+LIBFT_DIR	= $(LIB_DIR)/libft
+LIBFT_INC	= $(LIBFT_DIR)/inc
 
 INC_DIR		= inc
 SRC_DIR		= src
