@@ -46,7 +46,7 @@ void fileToData(const std::string &filename, std::vector<std::string> &data, siz
 	std::string line;
 
 	if (!f.is_open())
-		throw ft::systemError("std::ifstream");
+		throw ft::logError("std::ifstream");
 	data.clear();
 	while (std::getline(f, line))
 	{

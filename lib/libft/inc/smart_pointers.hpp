@@ -84,4 +84,4 @@ namespace ft
     };
 }
 
-#include "smart_pointer.tpp"
+#include "../src/smart_pointer.tpp"
