@@ -5,7 +5,7 @@
 
 namespace tcp
 {
-    Socket::Socket() {}
+    Socket::Socket(): _fd(-1)  {}
 
     Socket::~Socket() throw() {}
 
@@ -45,7 +45,7 @@ namespace tcp
     void Socket::setIpv6only()
     {
         int v6Only = 1;
-        if (::setsockopt(_fd, IPPROTO_IPV6, IPV6_V6ONLY, &v6Only, sizeof(v6Only)) == -1)
+        if (::setsockopt(_fd, IPPROTO_IPV6, IPV6_V6ONLY, &v6Only, sizeof(int)) == -1)
             throw ft::logError("setsockopt");
     }
 

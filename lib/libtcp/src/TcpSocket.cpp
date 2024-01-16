@@ -29,16 +29,14 @@ namespace tcp
     bool TcpSocket::readLine(std::string &line)
     {
         line.clear();
+        if (!isLine() && !fill())
+            return false;
         if (!isLine())
-        {
-            if (!fill())
-                return false;
             return true;
-        }   
         line = _readBuf.substr(0, _newline + 1);
         _readBuf.erase(0, _newline + 1);
         _newline = std::string::npos;
-        return (true);
+        return true;
     }
 
     bool TcpSocket::fill()

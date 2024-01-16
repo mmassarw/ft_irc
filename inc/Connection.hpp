@@ -1,5 +1,4 @@
-#ifndef CONNECTION_HPP
-# define CONNECTION_HPP
+#pragma once
 
 class Connection
 {
@@ -7,5 +6,3 @@ class Connection
         Connection();
         ~Connection();
 };
-
-#endif

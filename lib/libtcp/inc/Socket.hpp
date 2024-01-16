@@ -1,5 +1,4 @@
-#ifndef SOCKET_HPP
-# define SOCKET_HPP
+#pragma once
 
 #include <sys/socket.h>
 
@@ -26,5 +25,3 @@ namespace tcp
             sockaddr_storage        _addr;
     };
 } // namespace tcp
-
-#endif

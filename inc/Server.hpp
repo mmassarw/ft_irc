@@ -1,5 +1,4 @@
-#ifndef SERVER_HPP
-# define SERVER_HPP
+#pragma once
 
 class Server
 {
@@ -7,5 +6,3 @@ class Server
         Server();
         ~Server();
 };
-
-#endif

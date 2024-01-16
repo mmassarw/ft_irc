@@ -1,5 +1,4 @@
-#ifndef LOGERROR_HPP
-# define LOGERROR_HPP
+#pragma once
 
 #include <stdexcept>
 #include <cerrno>
@@ -20,5 +19,3 @@ namespace ft
             const int _code;
     };
 }
-
-#endif

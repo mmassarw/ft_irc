@@ -1,5 +1,4 @@
-#ifndef TCPSOCKET_HPP
-# define TCPSOCKET_HPP
+#pragma once
 
 #include "Socket.hpp"
 #include <string>
@@ -44,7 +43,6 @@ namespace tcp
 
 		private:
 			friend class Listener;
+            friend class TcpServer;
     };
 } // namespace tcp
-
-#endif

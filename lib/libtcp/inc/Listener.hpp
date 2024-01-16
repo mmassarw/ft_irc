@@ -1,5 +1,4 @@
-#ifndef LISTENER_HPP
-# define LISTENER_HPP
+#pragma once
 
 #include "TcpSocket.hpp"
 
@@ -18,5 +17,3 @@ namespace tcp
             Listener();
     };
 } // namespace tcp
-
-#endif
