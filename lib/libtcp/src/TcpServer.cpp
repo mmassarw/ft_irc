@@ -1,8 +1,8 @@
 #include "TcpServer.hpp"
 #include "libft.hpp"
 
-#include <sys/signal.h>
 #include <sys/select.h>
+#include <signal.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <netdb.h>
