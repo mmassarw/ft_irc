@@ -83,5 +83,3 @@ namespace ft
         friend class sharedPtr<T>;
     };
 }
-
-#include "../src/smart_pointer.tpp"
