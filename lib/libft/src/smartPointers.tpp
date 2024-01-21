@@ -1,5 +1,3 @@
-
-
 namespace ft {
     template <class T>
     uniquePtr<T>::uniquePtr(T *ptr): ptr(ptr) {}

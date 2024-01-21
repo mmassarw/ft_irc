@@ -2,12 +2,47 @@
 #include "logError.hpp"
 #include <fcntl.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
 
 namespace tcp
 {
     const size_t TcpSocket::readSize = 1024;
 
-    TcpSocket::TcpSocket():Socket(), _isReadable(false), _isWriteable(false), _newline(std::string::npos) {}
+    TcpSocket::TcpSocket(): Socket(), _isReadable(false), _isWriteable(false), _newline(std::string::npos) {}
+
+    TcpSocket::TcpSocket(int listenerFd): Socket(), _isReadable(false), _isWriteable(false), _newline(std::string::npos)
+    {
+        socklen_t addrLen = sizeof(_addr);
+        if ((_fd = accept(listenerFd, (sockaddr *)&_addr, &addrLen)) == -1)
+            throw ft::logError("accept");
+        if (family() == AF_INET)
+        {
+            _port = ntohs(((sockaddr_in *)&_addr)->sin_port);
+            _ip = inet_ntoa(((sockaddr_in *)&_addr)->sin_addr);
+        }
+        else if (family() == AF_INET6)
+        {
+            char buf[INET6_ADDRSTRLEN];
+            _port = ntohs(((sockaddr_in6 *)&_addr)->sin6_port);
+            if (!(inet_ntop(AF_INET6, &_addr, buf, INET6_ADDRSTRLEN)))
+            {
+                close();
+                throw ft::logError("inet_ntop");
+            }
+            _ip = buf;
+        }
+        else
+        {
+            close();
+            throw ft::logError(EPFNOSUPPORT, "accept");
+        }
+        char buf[NI_MAXHOST];
+        if (!getnameinfo((sockaddr *)&_addr, addrLen, buf, sizeof(buf), NULL, 0, NI_NAMEREQD))
+            _host = buf;
+        else
+            _host = _ip;
+    }
 
     TcpSocket::~TcpSocket() throw() {
         close();

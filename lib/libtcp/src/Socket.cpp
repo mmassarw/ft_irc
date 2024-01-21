@@ -2,6 +2,7 @@
 #include "logError.hpp"
 #include <fcntl.h>
 #include <netinet/in.h>
+#include <unistd.h>
 
 namespace tcp
 {
@@ -53,5 +54,10 @@ namespace tcp
     {
         if (fcntl(_fd, F_SETFL, O_NONBLOCK) == -1)
             throw ft::logError("fcntl");
+    }
+
+    int Socket::close() throw()
+    {
+        return ::close(_fd);
     }
 }

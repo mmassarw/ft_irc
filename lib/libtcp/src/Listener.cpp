@@ -1,9 +1,12 @@
 #include "Listener.hpp"
 #include "logError.hpp"
+#include <netinet/in.h>
 
 namespace tcp
 {
-    Listener::Listener() {}
+    Listener::Listener(int family): Socket() {
+        socket(family, IPPROTO_TCP);
+    }
 
     Listener::~Listener() throw() {
         close();
