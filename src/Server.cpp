@@ -1,12 +1,11 @@
 #include "Server.hpp"
 #include <iostream>
 
-Server::Server(Config &config, bool _autoInit)
+Server::Server(Config &config, bool _autoInit) : _state(ACTIVE)
 {
     _setting.serverName = config.serverName();
     _setting.tcpPort = config.tcpPort();
     _setting.maxConnections = config.maxConnections();
-    _state = ACTIVE;
 
     _tcpSrv.listen(_setting.tcpPort.c_str());
     if (_autoInit)
