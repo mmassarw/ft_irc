@@ -10,7 +10,7 @@
 
 namespace tcp
 {
-    bool alive = false;
+    bool alive = true;
 
     const size_t TcpServer::defaultMaxConnections = 1024;
     const timeval TcpServer::selectTimeout = {5, 0};

@@ -1,12 +1,12 @@
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
-#    MakeFile                                           :+:      :+:    :+:    #
+#    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
 #    By: fkhan <fkhan@student.42abudhabi.ae>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/01 18:08:21 by fkhan             #+#    #+#              #
-#    Updated: 2024/01/01 20:54:35 by fkhan            ###   ########.fr        #
+#    Updated: 2024/01/21 19:06:34 by fkhan            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,8 +14,8 @@ NAME		= ircserv
 
 CXX			= c++
 CXXFLAGS	= -Wall -Wextra -Werror -std=c++98 -g
-INCFLAGS	= -I$(INC_DIR) -I$(INC_CMD_DIR) -I$(LIBFT_INC) -I$(LIBTCP_INC)
-LIBFLAGS	= -L ./$(LIBFT_DIR) -lft -L ./$(LIBTCP_DIR) -ltcp
+INCFLAGS	= -I$(INC_DIR) -I$(INC_CMD_DIR) -I$(LIBFT_INC) -I$(LIBTCP_INC) -I$(LIBIRC_INC)
+LIBFLAGS	= -L ./$(LIBFT_DIR) -lft -L ./$(LIBTCP_DIR) -ltcp -L ./$(LIBIRC_DIR) -lIRC
 
 CFG_DIR		= config
 CFG_LOG		= $(CFG_DIR)/ircserv.log
@@ -33,6 +33,10 @@ LIBFT		= $(LIBFT_DIR)/libft.a
 LIBTCP_DIR	= $(LIB_DIR)/libtcp
 LIBTCP_INC	= $(LIBTCP_DIR)/inc
 LIBTCP		= $(LIBTCP_DIR)/libtcp.a
+
+LIBIRC_DIR	= $(LIB_DIR)/libIRC
+LIBIRC_INC	= $(LIBIRC_DIR)/inc
+LIBIRC		= $(LIBIRC_DIR)/libIRC.a
 
 INC_DIR		= inc
 INC_CMD_DIR	= inc/cmd
@@ -52,7 +56,7 @@ all: $(NAME)
 
 bonus: all
 
-$(NAME): $(LIBFT) $(LIBTCP) $(BUILD_DIR) $(OBJ)
+$(NAME): $(LIBFT) $(LIBTCP) $(LIBIRC) $(BUILD_DIR) $(OBJ)
 	@$(CXX) $(CXXFLAGS) $(OBJ) $(LIBFLAGS) $(INCFLAGS) -o $(NAME)
 	@echo "\n$(NAME): $(GREEN)object files were created$(RESET)"
 	@echo "$(NAME): $(GREEN)$(NAME) was created$(RESET)"
@@ -74,15 +78,22 @@ $(LIBTCP):
 	@echo "$(NAME): $(GREEN)Creating $(LIBTCP)...$(RESET)"
 	@$(MAKE) -sC $(LIBTCP_DIR)
 
+$(LIBIRC):
+	@echo "$(NAME): $(GREEN)Creating $(LIBIRC)...$(RESET)"
+	@$(MAKE) -sC $(LIBIRC_DIR)
+
 clean:
 	@$(MAKE) -sC $(LIBFT_DIR) clean
 	@$(MAKE) -sC $(LIBTCP_DIR) clean
+	@$(MAKE) -sC $(LIBIRC_DIR) clean
 	@rm -rf $(BUILD_DIR)
 	@echo "$(NAME): $(RED)object files were deleted$(RESET)"
 
 fclean: clean
+	@rm -f $(LIBIRC)
+	@echo "$(NAME): $(RED)$(LIBIRC) was deleted$(RESET)"
 	@rm -f $(LIBTCP)
-	@echo "$(NAME): $(RED)$(FT_PRINTF) was deleted$(RESET)"
+	@echo "$(NAME): $(RED)$(LIBTCP) was deleted$(RESET)"
 	@rm -f $(LIBFT)
 	@echo "$(NAME): $(RED)$(LIBFT) was deleted$(RESET)"
 	@rm -f $(NAME)

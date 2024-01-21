@@ -1,11 +1,12 @@
 #pragma once
+
 #include <iostream>
 #include <map>
 
 struct Operator
 {
-	Operator();
-	Operator(std::string login, std::string pass, std::string host);
+	Operator() {}
+	Operator(std::string newLogin, std::string newPass, std::string newHost): login(newLogin), pass(newPass), host(newHost) {}
 	
 	std::string login;
 	std::string pass;
@@ -15,25 +16,28 @@ struct Operator
 class Config
 {
     public:
-        Config(int ac, char **av);
-        ~Config();
+		typedef std::map<std::string, Operator *>	OperatorMap;
         
-        std::string 							serverName();
-        std::string 							serverPass();
-        std::string 							serverDesc();
-        std::string 							tcpPort();
-        time_t      							ping();
-        time_t 									pong();
-        int 									maxConnections();
-        int 									maxChannels();
-		Operator 								oper(std::string &login);
+		Config(int ac, char **av);
+        ~Config() throw();
+        
+        std::string 		serverName();
+        std::string 		serverPass();
+        std::string 		serverDesc();
+        std::string 		tcpPort();
+        time_t      		ping();
+        time_t 				pong();
+        int 				maxConnections();
+        int 				maxChannels();
+		Operator 			*getOperator(std::string &login);
+		void				clear() throw();
 		
 		class ParseException : public std::exception {};
 
     private:
-		Config();
-		
-		std::string								_serverPass;
-		std::string								_tcpPort;
-		std::map<std::string, Operator> 		_opers;
+		//Config();
+
+		std::string			_serverPass;
+		std::string			_tcpPort;
+		OperatorMap 		_operators;
 };

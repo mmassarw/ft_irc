@@ -5,14 +5,12 @@
 
 int main(int ac, char **av)
 {
-    (void)ac;
-    (void)av;
     Server::State state = Server::ACTIVE;
     while (state != Server::SHUTDOWN)
-    {;
+    {
         try {
             Config config = Config(ac, av);
-            Server server = Server(config);
+            Server server = Server(config, true);
             
             server.run();
             state = server.state();
