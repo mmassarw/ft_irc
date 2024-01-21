@@ -1,4 +1,4 @@
-#include "IrcServer.hpp"
+#include "Server.hpp"
 #include "libft.hpp"
 
 //information about a server.

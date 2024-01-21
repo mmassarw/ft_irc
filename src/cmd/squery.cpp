@@ -1,4 +1,4 @@
-#include "IrcServer.hpp"
+#include "Server.hpp"
 
 //private communication between a registered user and a specific service on the IRC server, 
 //allowing users to send messages or commands to services.

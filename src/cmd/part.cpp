@@ -1,4 +1,4 @@
-#include "IrcServer.hpp"
+#include "Server.hpp"
 
 //leave one or more IRC channels.
 

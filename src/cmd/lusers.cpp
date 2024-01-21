@@ -1,4 +1,4 @@
-#include "IrcServer.hpp"
+#include "Server.hpp"
 #include "libft.hpp"
 
 //export various statistics about the server's local user population and channel count.

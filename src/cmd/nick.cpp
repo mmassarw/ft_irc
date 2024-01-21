@@ -1,4 +1,4 @@
-#include "IrcServer.hpp"
+#include "Server.hpp"
 
 //allowing a user to change their nickname.
 

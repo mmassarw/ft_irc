@@ -1,4 +1,4 @@
-#include "IrcServer.hpp"
+#include "Server.hpp"
 
 //PING/PONG mechanism to maintain connection stability.
 

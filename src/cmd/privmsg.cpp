@@ -1,4 +1,4 @@
-#include "IrcServer.hpp"
+#include "Server.hpp"
 #include "libft.hpp"
 
 //handles the processing of private messages, delivers the messages accordingly.

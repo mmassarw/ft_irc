@@ -1,4 +1,4 @@
-#include "IrcServer.hpp"
+#include "Server.hpp"
 #include "libft.hpp"
 
 //allowing a user to send notices to other users, channels ...

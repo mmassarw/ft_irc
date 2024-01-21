@@ -1,4 +1,4 @@
-#include "IrcServer.hpp"
+#include "Server.hpp"
 #include "libft.hpp"
 
 // sends information about visible channels, considering user membership and channel modes, 

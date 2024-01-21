@@ -1,4 +1,4 @@
-#include "IrcServer.hpp"
+#include "Server.hpp"
 
 //Message of the Day, allows to request and receive a text message displayed by the server 
 //upon connection, providing information, announcements ...

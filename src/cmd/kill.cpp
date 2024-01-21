@@ -1,4 +1,4 @@
-#include "IrcServer.hpp"
+#include "Server.hpp"
 
 //allows an operator to forcefully terminate the connection, affecting an individual user.
 

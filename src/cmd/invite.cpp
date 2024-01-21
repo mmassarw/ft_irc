@@ -1,4 +1,4 @@
-#include "IrcServer.hpp"
+#include "Server.hpp"
 
 //invites a user to a channel, returns 0 to indicate successful execution.
 

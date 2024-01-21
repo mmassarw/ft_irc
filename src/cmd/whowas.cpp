@@ -1,4 +1,4 @@
-#include "IrcServer.hpp"
+#include "Server.hpp"
 #include "libft.hpp"
 
 //historical information about users who were previously connected to the IRC network but are not currently online.

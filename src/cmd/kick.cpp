@@ -1,4 +1,4 @@
-#include "IrcServer.hpp"
+#include "Server.hpp"
 
 //handles the removal of users from one or more channels by a channel operator or creator
 

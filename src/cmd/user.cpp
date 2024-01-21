@@ -1,4 +1,4 @@
-#include "IrcServer.hpp"
+#include "Server.hpp"
 
 //providing essential user information to the server, including a username, modes, and realname.
 //The server registers the user if needed.

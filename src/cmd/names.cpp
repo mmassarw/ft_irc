@@ -1,4 +1,4 @@
-#include "IrcServer.hpp"
+#include "Server.hpp"
 #include "libft.hpp"
 
 //providing a list of nicknames in specified channels or all channels, categorized based on their channel modes.

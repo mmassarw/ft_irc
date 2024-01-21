@@ -1,4 +1,4 @@
-#include "IrcServer.hpp"
+#include "Server.hpp"
 #include "libft.hpp"
 
 //provides the user with the current time information of the IRC server, optionally specifying a target server.

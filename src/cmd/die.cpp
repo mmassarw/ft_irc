@@ -1,4 +1,4 @@
-#include "IrcServer.hpp"
+#include "Server.hpp"
 
 //user with operator privileges initiates a request to shut down the IRC server, affecting the entire server.
 
