@@ -58,6 +58,11 @@ int Config::maxChannels()
 	return (180);
 }
 
+Config::OperatorMap Config::operators()
+{
+	return (_operators);
+}
+
 Operator *Config::getOperator(std::string &login)
 {
 	return (_operators[login]);

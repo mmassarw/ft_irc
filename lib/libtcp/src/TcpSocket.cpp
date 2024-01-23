@@ -117,6 +117,11 @@ namespace tcp
         return (isLine() || _isReadable);
     }
 
+    bool TcpSocket::canWriteLine()
+    {
+        return (_isWriteable);
+    }
+
     bool TcpSocket::isWbufEmpty() const {
         return (_writeBuf.empty());
     }

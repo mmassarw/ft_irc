@@ -1,11 +1,13 @@
 #include "Server.hpp"
 #include <iostream>
 
+const size_t Server::maxLineSize = 2048;
+
 Server::Server(Config &config, bool _autoInit) : _state(ACTIVE)
 {
     _setting.serverName = config.serverName();
     _setting.tcpPort = config.tcpPort();
-    _setting.maxConnections = config.maxConnections();
+    _setting.operators = config.operators();
 
     _tcpSrv.listen(_setting.tcpPort.c_str());
     if (_autoInit)
@@ -46,6 +48,36 @@ void Server::run()
 			std::cout << user->socket()->host() << " CONNECTED" << std::endl;
 			_network.add(user);
 		}
+        tcp::TcpSocket *socket;
+        while ((socket = _tcpSrv.nextPendingConnection()) && _state == ACTIVE)
+		{
+            try
+            {
+                std::string line;
+                while (socket->canReadLine())
+                {
+                    if (!socket->readLine(line))
+                    {
+                        std::cout << "Remote host closed connection" << std::endl;
+                        continue;
+                    }
+                    if (socket->readBufSize() > maxLineSize)
+                    {
+                        std::cout << "Socket's buffer size has exceed the limit" << std::endl;
+                    }
+                    if (line.empty())
+						continue ;
+                    std::cout << line;
+                }
+            }
+            catch(const std::exception& e)
+            {
+                std::cerr << e.what() << std::endl;
+                std::cout << "Disconnected client" << std::endl;
+                continue;
+            }
+            
+        }
     }
 }
 

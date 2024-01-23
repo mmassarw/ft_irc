@@ -140,7 +140,7 @@ namespace tcp
                 c->_isReadable = true;
             if (FD_ISSET(c->fd(), &writeSet))
                 c->_isWriteable = true;
-            if (c->canReadLine() || c->_isWriteable)
+            if (c->canReadLine() || c->canWriteLine())
                 _pending.push_back(c);
         }
     }

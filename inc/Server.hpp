@@ -11,9 +11,10 @@ struct ServerSetting
     ServerSetting() {}
     ServerSetting(std::string newServerName, std::string newTcpPort, int newMaxConnections) : serverName(newServerName), tcpPort(newTcpPort), maxConnections(newMaxConnections) {}
 
-    std::string     serverName;
-    std::string     tcpPort;
-    int             maxConnections;
+    std::string             serverName;
+    std::string             tcpPort;
+    int                     maxConnections;
+    Config::OperatorMap     operators;
 };
 
 class Server
@@ -35,6 +36,8 @@ class Server
 
     private:
         Server();
+
+        static const size_t maxLineSize;
         
         State			_state;
         time_t			_creation;

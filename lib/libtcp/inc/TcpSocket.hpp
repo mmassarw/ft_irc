@@ -17,6 +17,7 @@ namespace tcp
 			size_t				readBufSize() const;
 			bool				isLine();
 			bool				canReadLine();
+            bool				canWriteLine();
 
 			bool				readLine(std::string &line);
 			void				writeLine(const std::string &data) throw();

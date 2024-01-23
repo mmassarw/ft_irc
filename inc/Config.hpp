@@ -16,8 +16,8 @@ struct Operator
 class Config
 {
     public:
-		typedef std::map<std::string, Operator *>	OperatorMap;
-        
+        typedef std::map<std::string, Operator *>	OperatorMap;
+		
 		Config(int ac, char **av);
         ~Config() throw();
         
@@ -29,6 +29,7 @@ class Config
         time_t 				pong();
         int 				maxConnections();
         int 				maxChannels();
+		OperatorMap 		operators();
 		Operator 			*getOperator(std::string &login);
 		void				clear() throw();
 		
