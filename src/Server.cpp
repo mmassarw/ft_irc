@@ -93,4 +93,5 @@ int Server::exec(Connection *sender, const IRC::Message &msg)
     (void)sender;
     (void)msg;
     return 0;
+
 }
