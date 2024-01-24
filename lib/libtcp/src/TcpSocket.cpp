@@ -64,7 +64,7 @@ namespace tcp
     bool TcpSocket::readLine(std::string &line)
     {
         line.clear();
-        if (!isLine() && !fill())
+        if (!isLine() && !recvBuffer())
             return false;
         if (!isLine())
             return true;
@@ -74,7 +74,7 @@ namespace tcp
         return true;
     }
 
-    bool TcpSocket::fill()
+    bool TcpSocket::recvBuffer()
     {
         if (_isReadable)
         {
@@ -87,6 +87,15 @@ namespace tcp
             _readBuf += buf;
         }
         return true;
+    }
+
+    void TcpSocket::sendBuffer()
+    {
+        if (!_isWriteable || isWbufEmpty())
+            return ;
+        _isWriteable = false;
+        send(_writeBuf.c_str(), _writeBuf.size());
+        _writeBuf.clear();
     }
 
     int TcpSocket::recv(void *buf, size_t n, int flags)

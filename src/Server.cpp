@@ -53,6 +53,7 @@ void Server::run()
 		{
             try
             {
+                socket->sendBuffer();
                 std::string line;
                 while (socket->canReadLine())
                 {
@@ -68,6 +69,7 @@ void Server::run()
                     if (line.empty())
 						continue ;
                     std::cout << line;
+                    exec(_network.getConnBySocket(socket), IRC::Message(line));
                 }
             }
             catch(const std::exception& e)
@@ -84,4 +86,11 @@ void Server::run()
 void Server::writeMessage(User &user, const std::string &command, const std::string &content)
 {
 	user.sendMessage((IRC::MessageBuilder(_setting.serverName, command) << user.nickname() << content).str());
+}
+
+int Server::exec(Connection *sender, const IRC::Message &msg)
+{
+    (void)sender;
+    (void)msg;
+    return 0;
 }

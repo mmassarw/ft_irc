@@ -21,7 +21,8 @@ namespace tcp
 
 			bool				readLine(std::string &line);
 			void				writeLine(const std::string &data) throw();
-			virtual bool		fill();
+			virtual bool		recvBuffer();
+            virtual void        sendBuffer();
 
         protected:
             TcpSocket();

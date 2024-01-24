@@ -46,4 +46,5 @@ class Server
         Network			_network;
 
         void	        writeMessage(User &user, const std::string &command, const std::string &content);
+        int             exec(Connection *sender, const IRC::Message &msg);
 };

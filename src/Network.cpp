@@ -30,3 +30,9 @@ void Network::clear() throw()
 	for (ServiceMap::iterator i = _services.begin(); i != _services.end(); ++i)
 		delete i->second;
 }
+
+Connection *Network::getConnBySocket(tcp::TcpSocket *socket)
+{
+	ConnectionMap::const_iterator i = _connections.find(socket);
+	return (i == _connections.end() ? NULL : i->second);
+}

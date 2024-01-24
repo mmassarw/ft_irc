@@ -18,6 +18,7 @@ class Network
 		void			add(User *user);
 		void			add(Channel *channel);
 		void			clear() throw();
+		Connection		*getConnBySocket(tcp::TcpSocket *socket);
 		
 	private:
 		ConnectionMap	_connections;
