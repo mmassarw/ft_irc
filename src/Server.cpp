@@ -6,6 +6,7 @@ const size_t Server::maxLineSize = 2048;
 Server::Server(Config &config, bool _autoInit) : _state(ACTIVE)
 {
     _setting.serverName = config.serverName();
+    _setting.serverPass = config.serverPass();
     _setting.tcpPort = config.tcpPort();
     _setting.operators = config.operators();
 
@@ -43,7 +44,7 @@ void Server::run()
         tcp::TcpSocket *newSocket;
         while ((newSocket = _tcpSrv.nextNewConnection()))
 		{
-			User *user = new User(newSocket);
+			User *user = new User(newSocket, _setting.serverPass.size() ? UserRequirement::ALL : UserRequirement::ALL_EXCEPT_PASS);
 			writeMessage(*user, "NOTICE", "Connection established");
 			std::cout << user->socket()->host() << " CONNECTED" << std::endl;
 			_network.add(user);

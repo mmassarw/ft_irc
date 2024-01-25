@@ -12,6 +12,7 @@ struct ServerSetting
     ServerSetting(std::string newServerName, std::string newTcpPort, int newMaxConnections) : serverName(newServerName), tcpPort(newTcpPort), maxConnections(newMaxConnections) {}
 
     std::string             serverName;
+    std::string             serverPass;
     std::string             tcpPort;
     int                     maxConnections;
     Config::OperatorMap     operators;
