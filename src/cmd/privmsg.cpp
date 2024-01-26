@@ -3,14 +3,14 @@
 
 //handles the processing of private messages, delivers the messages accordingly.
 
-int IrcServer::privmsg(User &u, const IRC::Message &m)
+int Server::privmsg(User &u, const IRC::Message &m)
 {
 	if (!u.isRegistered())
-		return (writeNum(u, IRC::Error::notregistered()));
+		return (writeNumber(u, IRC::Error::notregistered()));
 	if (!m.params().size())
-		return (writeNum(u, IRC::Error::norecipient(m.command())));
+		return (writeNumber(u, IRC::Error::norecipient(m.command())));
 	if (m.params().size() == 1)
-		return (writeNum(u, IRC::Error::notexttosend()));
+		return (writeNumber(u, IRC::Error::notexttosend()));
 
 	Params		targets(m.params()[0].split());
 	const IRC::Param	&text(m.params()[1]);
@@ -19,23 +19,23 @@ int IrcServer::privmsg(User &u, const IRC::Message &m)
 	{
 		if (target->isMask())
 		{
-			if (!u.umode().isSet(UserMode::OPERATOR))
+			if (!u.userMode().isSet(UserMode::OPERATOR))
 			{
-				writeNum(u, IRC::Error::noprivileges());
+				writeNumber(u, IRC::Error::noprivileges());
 				continue ;
 			}
 			const std::string mask = target->mask().substr(1);
 			if ((*target)[0] == '$')
 			{
-				if (ft::match(mask, config.servername))
-					for (Network::UserMap::const_iterator i = network.users().begin(); i != network.users().end(); ++i)
+				if (ft::match(mask, _setting.serverName))
+					for (Network::UserMap::const_iterator i = _network.users().begin(); i != _network.users().end(); ++i)
 					{
 						User *v(i->second);
 						if (!v->hopcount() && v->isRegistered() && v->socket() != u.socket())
-							v->writeLine((IRC::MessageBuilder(u.prefix(), m.command()) << *target << text).str());
+							v->sendMessage((IRC::MessageBuilder(u.label(), m.command()) << *target << text).str());
 					}
 				else
-					writeNum(u, IRC::Error::badmask(*target));
+					writeNumber(u, IRC::Error::badmask(*target));
 			}
 			else if ((*target)[0] == '#')
 			{
@@ -44,47 +44,47 @@ int IrcServer::privmsg(User &u, const IRC::Message &m)
 
 				if ((dot = target->find_last_of('.')) == std::string::npos)
 				{
-					writeNum(u, IRC::Error::notoplevel(*target));
+					writeNumber(u, IRC::Error::notoplevel(*target));
 					continue ;
 				}
 				toplevel = target->substr(dot);
 				if (toplevel.find('*') != std::string::npos || toplevel.find('?') != std::string::npos)
-					writeNum(u, IRC::Error::wildtoplevel(*target));
+					writeNumber(u, IRC::Error::wildtoplevel(*target));
 				else
 				{
 					bool found = false;
-					for (Network::UserMap::const_iterator it = network.users().begin(); it != network.users().end(); ++it)
+					for (Network::UserMap::const_iterator it = _network.users().begin(); it != _network.users().end(); ++it)
 						if (ft::match(mask, it->second->socket()->host()))
 						{
-							it->second->writeLine((IRC::MessageBuilder(it->second->prefix(), m.command()) << *target << text).str());
+							it->second->sendMessage((IRC::MessageBuilder(it->second->label(), m.command()) << *target << text).str());
 							found = true;
 						}
 					if (!found)
-						writeNum(u, IRC::Error::badmask(*target));
+						writeNumber(u, IRC::Error::badmask(*target));
 				}
 			}
 		}
 		else if (target->isNickname())
 		{
-			User *receiver = network.getByNickname(*target);
+			User *receiver = _network.getUserByNickname(*target);
 			if (!receiver)
 			{
-				writeNum(u, IRC::Error::nosuchnick(*target));
+				writeNumber(u, IRC::Error::nosuchnick(*target));
 				continue ;
 			}
-			if (receiver->umode().isSet(UserMode::AWAY))
-				writeNum(u, IRC::Reply::away(receiver->nickname(), receiver->awayReason()));
-			receiver->writeLine((IRC::MessageBuilder(u.prefix(), m.command()) << *target << text).str());
+			if (receiver->userMode().isSet(UserMode::AWAY))
+				writeNumber(u, IRC::Reply::away(receiver->nickname(), receiver->awayReason()));
+			receiver->sendMessage((IRC::MessageBuilder(u.label(), m.command()) << *target << text).str());
 		}
 		else if (target->isChannel())
 		{
-			Channel *chan = network.getByChannelname(*target);
+			Channel *chan = _network.getChannelByName(*target);
 			if (!chan)
-				writeNum(u, IRC::Error::nosuchchannel(*target));
+				writeNumber(u, IRC::Error::nosuchchannel(*target));
 			else if (!chan->canSendToChannel(&u))
-				writeNum(u, IRC::Error::cannotsendtochan(chan->name()));
+				writeNumber(u, IRC::Error::cannotsendtochan(chan->name()));
 			else
-				chan->send((IRC::MessageBuilder(u.prefix(), m.command()) << chan->name() << text).str(), &u);
+				chan->send((IRC::MessageBuilder(u.label(), m.command()) << chan->name() << text).str(), &u);
 		}
 	}
 	u.idle() = ::time(NULL);

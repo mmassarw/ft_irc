@@ -1,6 +1,7 @@
 #include "Connection.hpp"
 
-Connection::Connection(tcp::TcpSocket *socket, Type type, unsigned hopcount) : _socket(socket), _type(type), _hopcount(hopcount)
+Connection::Connection(tcp::TcpSocket *socket, Type type, unsigned hopcount) :
+_socket(socket), _type(type), _hopcount(hopcount), _clock(time(NULL)), _pongExpected(false)
 {
 }
 
@@ -31,4 +32,14 @@ void Connection::setType(const Type type)
 void Connection::sendMessage(const std::string &content)
 {
 	_socket->writeLine(content);
+}
+
+time_t &Connection::clock()
+{
+	return _clock;
+}
+
+bool &Connection::pongExpected()
+{
+	return _pongExpected;
 }

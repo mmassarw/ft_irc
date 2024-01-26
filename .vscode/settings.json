@@ -75,6 +75,7 @@
         "compare": "cpp",
         "concepts": "cpp",
         "variant": "cpp",
-        "__verbose_abort": "cpp"
+        "__verbose_abort": "cpp",
+        "set": "cpp"
     }
 }

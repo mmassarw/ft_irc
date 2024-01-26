@@ -2,6 +2,10 @@
 #include "libft.hpp"
 #include <iostream>
 
+CommandStats::CommandStats() : count(0), byteCount(0)
+{}
+
+const std::string Server::_version = "1.0.0";
 const size_t Server::maxLineSize = 2048;
 
 Server::Server(Config &config, bool _autoInit) : _state(ACTIVE), _creation(::time(NULL))
@@ -10,18 +14,25 @@ Server::Server(Config &config, bool _autoInit) : _state(ACTIVE), _creation(::tim
     
     _setting.serverName = config.serverName();
     _setting.serverPass = config.serverPass();
+	_setting.serverDesc = config.serverDesc();
     _setting.tcpPort = config.tcpPort();
     _setting.operators = config.operators();
+    _setting.maxConnections = config.maxConnections();
+    _setting.maxChannels = config.maxChannels();
+    _setting.maxMasks = config.maxMasks();
+	_setting.ping = config.ping();
+	_setting.pong = config.pong();
+	_setting.serverHosts = config.serverHosts();
     if (config.motdfile().size())
 		ft::fileToData(config.motdfile(), _setting.motd, 80);
     
     _commands[User::SERVICE]["KILL"] = &Server::kill;
-	_commands[User::SERVICE]["SERVICE"] = &Server::nick;
-	_commands[User::SERVICE]["SERVICE"] = &Server::notice;
-	_commands[User::SERVICE]["SERVICE"] = &Server::oper;
-	_commands[User::SERVICE]["SERVICE"] = &Server::pass;
-	_commands[User::SERVICE]["SERVICE"] = &Server::ping;
-	_commands[User::SERVICE]["SERVICE"] = &Server::pong;
+	_commands[User::SERVICE]["NICK"] = &Server::nick;
+	_commands[User::SERVICE]["NOTICE"] = &Server::notice;
+	_commands[User::SERVICE]["OPER"] = &Server::oper;
+	_commands[User::SERVICE]["PASS"] = &Server::pass;
+	_commands[User::SERVICE]["PING"] = &Server::ping;
+	_commands[User::SERVICE]["PONG"] = &Server::pong;
 	_commands[User::SERVICE]["PRIVMSG"] = &Server::privmsg;
 	_commands[User::SERVICE]["QUIT"] = &Server::quit;
 	_commands[User::SERVICE]["SERVICE"] = &Server::service;
@@ -43,7 +54,6 @@ Server::Server(Config &config, bool _autoInit) : _state(ACTIVE), _creation(::tim
 	_commands[User::USER]["MOTD"] = &Server::motd;
 	_commands[User::USER]["NAMES"] = &Server::names;
 	_commands[User::USER]["PART"] = &Server::part;
-	_commands[User::USER]["REHASH"] = &Server::rehash;
 	_commands[User::USER]["RESTART"] = &Server::restart;
 	_commands[User::USER]["STATS"] = &Server::stats;
 	_commands[User::USER]["TIME"] = &Server::time;
@@ -117,11 +127,11 @@ void Server::run()
             catch(const std::exception& e)
             {
                 std::cerr << e.what() << std::endl;
-                std::cout << "Disconnected client" << std::endl;
+                disconnect(socket, e.what());
                 continue;
             }
-            
         }
+		pingpongProbe();
     }
 }
 
@@ -230,4 +240,26 @@ void Server::writeWelcome(User &user)
 void Server::writeError(tcp::TcpSocket *socket, std::string reason)
 {
 	socket->writeLine((IRC::MessageBuilder(_setting.serverName, "ERROR") << reason).str());
+}
+
+void Server::pingpongProbe()
+{
+	static time_t ptime = 0;
+	time_t ctime = ::time(NULL);
+
+	if (ctime - ptime < 5)
+		return ;
+	ptime = ctime;
+	for (Network::ConnectionMap::const_iterator it = _network.connections().begin(); it != _network.connections().end();) {
+		Connection *c = it->second;
+		it++;
+		if (c->pongExpected() && ctime - c->clock() > _setting.pong)
+			disconnect(c->socket(), "Ping timeout");
+		else if (!c->pongExpected() && ctime - c->clock() > _setting.ping)
+		{
+			c->sendMessage("PING :" + _setting.serverName);
+			c->clock() = ctime;
+			c->pongExpected() = true;
+		}
+	}
 }

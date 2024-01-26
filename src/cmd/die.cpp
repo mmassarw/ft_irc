@@ -2,14 +2,14 @@
 
 //user with operator privileges initiates a request to shut down the IRC server, affecting the entire server.
 
-int IrcServer::die(User &u, const IRC::Message &m)
+int Server::die(User &u, const IRC::Message &m)
 {
 	(void)m;
 	if (!u.isRegistered())
-		return writeNum(u, IRC::Error::notregistered());
-	if (!u.umode().isSet(UserMode::OPERATOR))
-		return writeNum(u, IRC::Error::noprivileges());
-	_state = DIE;
-	log() << "DYING" << std::endl;
+		return writeNumber(u, IRC::Error::notregistered());
+	if (!u.userMode().isSet(UserMode::OPERATOR))
+		return writeNumber(u, IRC::Error::noprivileges());
+	_state = SHUTDOWN;
+	std::cout << "DYING" << std::endl;
 	return 0;
 }

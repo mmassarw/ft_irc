@@ -22,14 +22,14 @@ static const char *info[] = {
 "",
 NULL };
 
-int IrcServer::info(User &u, const IRC::Message &m)
+int Server::info(User &u, const IRC::Message &m)
 {
 	if (!u.isRegistered())
-		return (writeNum(u, IRC::Error::notregistered()));
-	if (m.params().size() && !ft::match(m.params()[0], config.servername))
-		return (writeNum(u, IRC::Error::nosuchserver(m.params()[0])));
+		return (writeNumber(u, IRC::Error::notregistered()));
+	if (m.params().size() && !ft::match(m.params()[0], _setting.serverName))
+		return (writeNumber(u, IRC::Error::nosuchserver(m.params()[0])));
 	for (size_t i = 0; ::info[i]; ++i)
-		writeNum(u, IRC::Reply::info(::info[i]));
-	writeNum(u, IRC::Reply::info(std::string("Compilation date: ") + __DATE__ " at " + __TIME__));
-	return writeNum(u, IRC::Reply::endofinfo());
+		writeNumber(u, IRC::Reply::info(::info[i]));
+	writeNumber(u, IRC::Reply::info(std::string("Compilation date: ") + __DATE__ " at " + __TIME__));
+	return writeNumber(u, IRC::Reply::endofinfo());
 }

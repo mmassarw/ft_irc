@@ -2,14 +2,14 @@
 
 //trigger to restart a server.
 
-int IrcServer::restart(User &u, const IRC::Message &m)
+int Server::restart(User &u, const IRC::Message &m)
 {
 	(void)m;
 	if (!u.isRegistered())
-		return writeNum(u, IRC::Error::notregistered());
-	if (!u.umode().isSet(UserMode::OPERATOR))
-		return writeNum(u, IRC::Error::noprivileges());
+		return writeNumber(u, IRC::Error::notregistered());
+	if (!u.userMode().isSet(UserMode::OPERATOR))
+		return writeNumber(u, IRC::Error::noprivileges());
 	_state = RESTART;
-	log() << "RESTARTING" << std::endl;
+	std::cout << "RESTARTING" << std::endl;
 	return 0;
 }

@@ -5,21 +5,21 @@
 
 #define IRC_WILDCARD "*"
 
-int IrcServer::servlist(User &u, const IRC::Message &m)
+int Server::servlist(User &u, const IRC::Message &m)
 {
 	if (!u.isRegistered())
-		return (writeNum(u, IRC::Error::notregistered()));
+		return (writeNumber(u, IRC::Error::notregistered()));
 	std::string mask;
 	if (m.params().size())
 		mask = m.params()[0].mask();
-	const Network::ServiceMap &map = network.services();
+	const Network::ServiceMap &map = _network.services();
 	for (Network::ServiceMap::const_iterator i = map.begin(); i != map.end(); ++i)
 	{
 		const User *s = i->second;
 		if ((mask.size() && !ft::match(mask, s->nickname())))
 			continue ;
-		writeNum(u, IRC::Reply::servlist(s->nickname(), config.servername, IRC_WILDCARD, IRC_WILDCARD, s->hopcount(), s->realname()));
+		writeNumber(u, IRC::Reply::servlist(s->nickname(), _setting.serverName, IRC_WILDCARD, IRC_WILDCARD, s->hopcount(), s->realname()));
 	}
-	writeNum(u, IRC::Reply::servlistend((mask.empty() ? IRC_WILDCARD : mask), IRC_WILDCARD));
+	writeNumber(u, IRC::Reply::servlistend((mask.empty() ? IRC_WILDCARD : mask), IRC_WILDCARD));
 	return (0);
 }

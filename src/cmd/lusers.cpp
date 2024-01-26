@@ -3,23 +3,23 @@
 
 //export various statistics about the server's local user population and channel count.
 
-int IrcServer::lusers(User &u, const IRC::Message &m)
+int Server::lusers(User &u, const IRC::Message &m)
 {
 	if (!u.isRegistered())
-		return (writeNum(u, IRC::Error::notregistered()));
-	if (m.params().size() && !ft::match(m.params()[0], config.servername))
-		return (writeNum(u, IRC::Error::nosuchserver(m.params()[0])));
-	if (m.params().size() > 1 && !ft::match(m.params()[1], config.servername))
-		return (writeNum(u, IRC::Error::nosuchserver(m.params()[1])));
-	Network::UserMap umap = network.users();
+		return (writeNumber(u, IRC::Error::notregistered()));
+	if (m.params().size() && !ft::match(m.params()[0], _setting.serverName))
+		return (writeNumber(u, IRC::Error::nosuchserver(m.params()[0])));
+	if (m.params().size() > 1 && !ft::match(m.params()[1], _setting.serverName))
+		return (writeNumber(u, IRC::Error::nosuchserver(m.params()[1])));
+	Network::UserMap umap = _network.users();
 	Network::UserMap::const_iterator ium = umap.begin();
-	writeNum(u, IRC::Reply::lusersclient(umap.size(), network.services().size(), 1));
+	writeNumber(u, IRC::Reply::lusersclient(umap.size(), _network.services().size(), 1));
 	int nbOp = 0;
 	int nbClients = 0;
 	int nbUnknown = 0;
 	while (ium != umap.end())
 	{
-		UserMode umode = ium->second->umode();
+		UserMode umode = ium->second->userMode();
 		UserRequirement ureq = ium->second->requirements();
 		if (umode.isSet(UserMode::OPERATOR))
 			nbOp++;
@@ -28,9 +28,9 @@ int IrcServer::lusers(User &u, const IRC::Message &m)
 		nbClients++;
 		++ium;
 	}
-	writeNum(u, IRC::Reply::lusersop(nbOp));
-	writeNum(u, IRC::Reply::lusersunknown(nbUnknown));
-	writeNum(u, IRC::Reply::luserschannels(network.channels().size()));
-	writeNum(u, IRC::Reply::lusersme(nbClients));
+	writeNumber(u, IRC::Reply::lusersop(nbOp));
+	writeNumber(u, IRC::Reply::lusersunknown(nbUnknown));
+	writeNumber(u, IRC::Reply::luserschannels(_network.channels().size()));
+	writeNumber(u, IRC::Reply::lusersme(nbClients));
 	return (0);
 }

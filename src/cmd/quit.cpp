@@ -2,7 +2,7 @@
 
 //disconnects user from the server. 
 
-int IrcServer::quit(User &u, const IRC::Message &m)
+int Server::quit(User &u, const IRC::Message &m)
 {
 	if (!u.isRegistered() || m.params().empty())
 		disconnect(u, "Client Quit", true);

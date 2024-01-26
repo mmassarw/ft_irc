@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <map>
+#include <set>
 
 struct Operator
 {
@@ -17,6 +18,7 @@ class Config
 {
     public:
         typedef std::map<std::string, Operator *>	OperatorMap;
+		typedef std::set<std::string>				ServerHostMap;
 		
 		Config(int ac, char **av);
         ~Config() throw();
@@ -30,16 +32,17 @@ class Config
         time_t 				pong();
         int 				maxConnections();
         int 				maxChannels();
+		int 				maxMasks();
 		OperatorMap 		operators();
 		Operator 			*getOperator(std::string &login);
+		ServerHostMap 		serverHosts();
 		void				clear() throw();
 		
 		class ParseException : public std::exception {};
 
     private:
-		//Config();
-
 		std::string			_serverPass;
 		std::string			_tcpPort;
 		OperatorMap 		_operators;
+		ServerHostMap 		_serverHosts;
 };

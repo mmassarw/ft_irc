@@ -2,43 +2,43 @@
 
 //allowing a user to change their nickname.
 
-int IrcServer::nick(User &u, const IRC::Message &m)
+int Server::nick(User &u, const IRC::Message &m)
 {
 	if (u.type() == User::SERVICE)
-		return (writeNum(u, IRC::Error::alreadyregistred()));
+		return (writeNumber(u, IRC::Error::alreadyregistred()));
 	if (!m.params().size())
-		return (writeNum(u, IRC::Error::nonicknamegiven()));
-	if (!u.requirements().isSet(UserRequirement::NICK) && u.umode().isSet(UserMode::RESTRICTED))
-		return (writeNum(u, IRC::Error::restricted()));
+		return (writeNumber(u, IRC::Error::nonicknamegiven()));
+	if (!u.requirements().isSet(UserRequirement::NICK) && u.userMode().isSet(UserMode::RESTRICTED))
+		return (writeNumber(u, IRC::Error::restricted()));
 	const IRC::Param &nick(m.params()[0]);
 	if (!nick.isNickname())
-		return (writeNum(u, IRC::Error::erroneusnickname(nick)));
-	if (network.getByNickname(nick) || network.isFnick(nick))
-		return (writeNum(u, IRC::Error::nicknameinuse(nick)));
-	network.remove(&u);
-	std::string oldprefix = u.prefix();
+		return (writeNumber(u, IRC::Error::erroneusnickname(nick)));
+	if (_network.getUserByNickname(nick) || _network.isFnick(nick))
+		return (writeNumber(u, IRC::Error::nicknameinuse(nick)));
+	_network.remove(&u);
+	std::string oldlabel = u.label();
 	u.setNickname(nick);
-	network.add(&u);
+	_network.add(&u);
 	if (u.requirements().isSet(UserRequirement::NICK))
 	{
 		u.unsetRequirement(UserRequirement::NICK);
 		if (u.isRegistered())
 		{
 			writeWelcome(u);
-			network.addNickToHistory(u);
+			_network.addNickToHistory(u);
 		}
 		else if (u.requirements().flags() == UserRequirement::PASS)
 		{
-			writeNum(u, IRC::Error::passwdmissmatch());
+			writeNumber(u, IRC::Error::passwdmissmatch());
 			disconnect(u, "Bad Password");
 		}
 	}
 	else
 	{
-		std::string msg((IRC::MessageBuilder(oldprefix, m.command()) << u.nickname()).str());
-		const Network::ChannelMap &channels = network.channels();
+		std::string msg((IRC::MessageBuilder(oldlabel, m.command()) << u.nickname()).str());
+		const Network::ChannelMap &channels = _network.channels();
 		Network::ChannelMap::const_iterator c = channels.begin();
-		network.resetUserReceipt();
+		_network.resetUserReceipt();
 		while (c != channels.end())
 		{
 			Channel *chan = c->second;
@@ -50,8 +50,8 @@ int IrcServer::nick(User &u, const IRC::Message &m)
 			++c;
 		}
 		if (!u.joinedChannels())
-			u.writeLine(msg);
-		network.addNickToHistory(u);
+			u.sendMessage(msg);
+		_network.addNickToHistory(u);
 	}
 	return (0);
 }

@@ -9,14 +9,20 @@
 struct ServerSetting
 {
     ServerSetting() {}
-    ServerSetting(std::string newServerName, std::string newTcpPort, int newMaxConnections) : serverName(newServerName), tcpPort(newTcpPort), maxConnections(newMaxConnections) {}
+	~ServerSetting() {}
 
     std::string             	serverName;
     std::string             	serverPass;
+	std::string					serverDesc;
     std::string             	tcpPort;
     int                     	maxConnections;
-    Config::OperatorMap     	operators;
+	size_t                     	maxChannels;
+	size_t						maxMasks;
+	time_t						ping;
+	time_t						pong;
 	std::vector<std::string>	motd;
+	Config::ServerHostMap		serverHosts;
+	Config::OperatorMap     	operators;
 };
 
 struct CommandStats
@@ -51,6 +57,7 @@ class Server
 		typedef std::map<std::string, CommandPointer> CmdMap;
 		typedef std::map<unsigned, CmdMap> CmdTypeMap;
 		typedef std::map<std::string, CommandStats> CommandsStatsMap;
+		typedef IRC::Message::Params Params;
 
 		static const std::string _version;
         static const size_t maxLineSize;
@@ -72,6 +79,7 @@ class Server
 		void			writeWelcome(User &user);
 		void			writeMotd(User &user);
 		void			writeError(tcp::TcpSocket *socket, std::string reason);
+		void 			pingpongProbe();
 
 		int				away(User &sender, const IRC::Message &msg);
 		int				die(User &sender, const IRC::Message &msg);

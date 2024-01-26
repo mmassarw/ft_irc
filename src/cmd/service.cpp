@@ -3,39 +3,39 @@
 
 //handling the registration process for services connecting to the IRC server.
 
-int IrcServer::service(User &u, const IRC::Message &m)
+int Server::service(User &u, const IRC::Message &m)
 {
 	if (u.isRegistered() || !u.requirements().areSet(UserRequirement::NICK | UserRequirement::USER))
-		return (writeNum(u, IRC::Error::alreadyregistred()));
+		return (writeNumber(u, IRC::Error::alreadyregistred()));
 	if (m.params().size() < 6)
-		return (writeNum(u, IRC::Error::needmoreparams(m.command())));
+		return (writeNumber(u, IRC::Error::needmoreparams(m.command())));
 	std::set<std::string>::const_iterator i;
-	for (i = config.servHosts.begin(); i != config.servHosts.end(); ++i)
+	for (i = _setting.serverHosts.begin(); i != _setting.serverHosts.end(); ++i)
 		if (ft::match(*i, u.socket()->host()))
 			break ;
-	if (i == config.servHosts.end())
+	if (i == _setting.serverHosts.end())
 	{
 		disconnect(u, "Access denied");
 		return (-1);
 	}
 	const IRC::Param &nick = m.params()[0];
 	if (!nick.isNickname())
-		return (writeNum(u, IRC::Error::erroneusnickname(nick)));
-	if (network.getByServicename(nick) || network.isFnick(nick))
-		return (writeNum(u, IRC::Error::nicknameinuse(nick)));
-	if (!ft::match(m.params()[2], config.servername))
-		return (writeNum(u, IRC::Error::nosuchserver(m.params()[2])));
+		return (writeNumber(u, IRC::Error::erroneusnickname(nick)));
+	if (_network.getUserByServiceName(nick) || _network.isFnick(nick))
+		return (writeNumber(u, IRC::Error::nicknameinuse(nick)));
+	if (!ft::match(m.params()[2], _setting.serverName))
+		return (writeNumber(u, IRC::Error::nosuchserver(m.params()[2])));
 	if (u.requirements().isSet(UserRequirement::PASS))
 	{
-		writeNum(u, IRC::Error::passwdmissmatch());
+		writeNumber(u, IRC::Error::passwdmissmatch());
 		disconnect(u, "Bad Password");
 		return (-1);
 	}
-	network.remove(&u);
+	_network.remove(&u);
 	u.setType(User::SERVICE);
 	u.setNickname(nick);
 	u.setRealname(m.params()[5]);
-	network.addService(&u);
+	_network.add(&u);
 	u.unsetRequirement(UserRequirement::NICK);
 	u.unsetRequirement(UserRequirement::USER);
 	writeWelcome(u);

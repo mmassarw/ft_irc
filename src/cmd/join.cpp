@@ -10,15 +10,15 @@ static bool parseNextKeyParam(const std::vector<IRC::Param> &params, size_t &i, 
 	return (1);
 }
 
-int IrcServer::join(User &u, const IRC::Message &m)
+int Server::join(User &u, const IRC::Message &m)
 {
 	if (!u.isRegistered())
-		return (writeNum(u, IRC::Error::notregistered()));
+		return (writeNumber(u, IRC::Error::notregistered()));
 	if (!m.params().size())
-		return (writeNum(u, IRC::Error::needmoreparams(m.command())));
+		return (writeNumber(u, IRC::Error::needmoreparams(m.command())));
 	if (m.params()[0] == "0")
 	{
-		const Network::ChannelMap &channels = network.channels();
+		const Network::ChannelMap &channels = _network.channels();
 		Network::ChannelMap::const_iterator i = channels.begin();
 		while (i != channels.end())
 		{
@@ -40,15 +40,15 @@ int IrcServer::join(User &u, const IRC::Message &m)
 	for (Params::const_iterator it = channels.begin(); it != channels.end(); ++it)
 	{
 		if (!it->isChannel())
-			writeNum(u, IRC::Error::nosuchchannel(*it));
-		else if (u.joinedChannels() < config.maxChannels)
+			writeNumber(u, IRC::Error::nosuchchannel(*it));
+		else if (u.joinedChannels() < _setting.maxChannels)
 		{
 			bool isBanned = 0, isInvited = 0;
-			Channel *c = network.getByChannelname(*it);
+			Channel *c = _network.getChannelByName(*it);
 			if (!c)
 			{
 				c = new Channel(*it);
-				network.add(c);
+				_network.add(c);
 			}
 			else if (c->findMember(&u))
 				continue ;
@@ -61,28 +61,28 @@ int IrcServer::join(User &u, const IRC::Message &m)
 				{
 					if (cm.isSet(ChannelMode::INVITE_ONLY))
 					{
-						writeNum(u, IRC::Error::inviteonlychan(*it));
+						writeNumber(u, IRC::Error::inviteonlychan(*it));
 						continue ;
 					}
 					if (isBanned)
 					{
-						writeNum(u, IRC::Error::bannedfromchan(*it));
+						writeNumber(u, IRC::Error::bannedfromchan(*it));
 						continue ;
 					}
 				}
 				if (cm.isSet(ChannelMode::LIMIT) && c->count() == c->limit())
 				{
-					writeNum(u, IRC::Error::channelisfull(*it));
+					writeNumber(u, IRC::Error::channelisfull(*it));
 					continue ;
 				}
 				if (cm.isSet(ChannelMode::KEY) && (!parseNextKeyParam(keys, keysI, key) || key != c->key()))
 				{
-					writeNum(u, IRC::Error::badchannelkey(*it));
+					writeNumber(u, IRC::Error::badchannelkey(*it));
 					continue ;
 				}
 			}
 			c->addMember(&u, MemberMode(c->count() || c->type() == Channel::UNMODERATED ? 0 : MemberMode::CREATOR | MemberMode::OPERATOR));
-			c->send((IRC::MessageBuilder(u.prefix(), m.command()) << *it).str());
+			c->send((IRC::MessageBuilder(u.label(), m.command()) << *it).str());
 			if (c->count() == 1)
 			{
 				if (c->type() == Channel::UNMODERATED)
@@ -96,7 +96,7 @@ int IrcServer::join(User &u, const IRC::Message &m)
 			names(u, IRC::Message("NAMES " + *it));
 		}
 		else
-			writeNum(u, IRC::Error::toomanychannels(*it));
+			writeNumber(u, IRC::Error::toomanychannels(*it));
 	}
-	return (needMoreParams ? writeNum(u, IRC::Error::needmoreparams(m.command())) : 0);
+	return (needMoreParams ? writeNumber(u, IRC::Error::needmoreparams(m.command())) : 0);
 }

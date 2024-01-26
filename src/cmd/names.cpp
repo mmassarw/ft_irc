@@ -3,14 +3,14 @@
 
 //providing a list of nicknames in specified channels or all channels, categorized based on their channel modes.
 
-int IrcServer::names(User &u, const IRC::Message &m)
+int Server::names(User &u, const IRC::Message &m)
 {
 	if (!u.isRegistered())
-		return (writeNum(u, IRC::Error::notregistered()));
-	if (m.params().size() > 1 && !ft::match(m.params()[1], config.servername))
-		return (writeNum(u, IRC::Error::nosuchserver(m.params()[1])));
+		return (writeNumber(u, IRC::Error::notregistered()));
+	if (m.params().size() > 1 && !ft::match(m.params()[1], _setting.serverName))
+		return (writeNumber(u, IRC::Error::nosuchserver(m.params()[1])));
 
-	const Network::ChannelMap &channels = network.channels();
+	const Network::ChannelMap &channels = _network.channels();
 	if (!m.params().size())
 	{
 		Network::ChannelMap::const_iterator ic = channels.begin();
@@ -46,11 +46,11 @@ int IrcServer::names(User &u, const IRC::Message &m)
 					else
 						listName += im->first->nickname() + (++im == members.end()-- ? "" : " ");
 				}
-				writeNum(u, IRC::Reply::namreply(listName));
+				writeNumber(u, IRC::Reply::namreply(listName));
 			}
 			++ic;
 		}
-		writeNum(u, IRC::Reply::endofnames("*"));
+		writeNumber(u, IRC::Reply::endofnames("*"));
 	}
 	else
 	{
@@ -107,8 +107,8 @@ int IrcServer::names(User &u, const IRC::Message &m)
 							listName += im->first->nickname() + (++im == members.end()-- ? "" : " ");
 					}
 				}
-				writeNum(u, IRC::Reply::namreply(listName));
-				writeNum(u, IRC::Reply::endofnames((*ip)));
+				writeNumber(u, IRC::Reply::namreply(listName));
+				writeNumber(u, IRC::Reply::endofnames((*ip)));
 			}
 			++ip;
 		}

@@ -4,10 +4,10 @@
 // basic information about users and channels based on a specified mask.  
 // o = parameter can be used to filter for operators.
 
-int IrcServer::who(User &u, const IRC::Message &m)
+int Server::who(User &u, const IRC::Message &m)
 {
 	if (!u.isRegistered())
-		return (writeNum(u, IRC::Error::notregistered()));
+		return (writeNumber(u, IRC::Error::notregistered()));
 
 	Params pMsg = m.params();
 
@@ -26,7 +26,7 @@ int IrcServer::who(User &u, const IRC::Message &m)
 		if (pMsg[1] == "o")
 			ope = true;
 
-	const Network::ChannelMap &channels = network.channels();
+	const Network::ChannelMap &channels = _network.channels();
 	Network::ChannelMap::const_iterator chanIter = channels.begin();
 	while (chanIter != channels.end() && !noParams)
 	{
@@ -47,7 +47,7 @@ int IrcServer::who(User &u, const IRC::Message &m)
 			{
 				User *us = memberIter->first;
 				MemberMode *mmode = c->findMember(us);
-				UserMode umode = us->umode();
+				UserMode umode = us->userMode();
 
 				if ((ope && (!umode.isSet(UserMode::OPERATOR)
 				&& !mmode->isSet(UserMode::OPERATOR)))
@@ -64,7 +64,7 @@ int IrcServer::who(User &u, const IRC::Message &m)
 
 				msg += c->name() + " " + us->username();
 				msg += " " + us->socket()->host();
-				msg += " " + config.servername + " " + us->nickname();
+				msg += " " + _setting.serverName + " " + us->nickname();
 
 
 				if (!umode.isSet(UserMode::AWAY))
@@ -82,18 +82,18 @@ int IrcServer::who(User &u, const IRC::Message &m)
 
 				// ---------------------------------------------- //
 
-				writeNum(u, IRC::Reply::whoreply(msg));
+				writeNumber(u, IRC::Reply::whoreply(msg));
 
 				++memberIter;
 
 			}
-			writeNum(u, IRC::Reply::endofwho(mask));
+			writeNumber(u, IRC::Reply::endofwho(mask));
 			return 0;
 		}
 		++chanIter;
 	}
 
-	const Network::UserMap &users = network.users();
+	const Network::UserMap &users = _network.users();
 	Network::UserMap::const_iterator userIter = users.begin();
 	while (userIter != users.end())
 	{
@@ -101,12 +101,12 @@ int IrcServer::who(User &u, const IRC::Message &m)
 		if (ft::match(mask, us->nickname())
 		|| ft::match(mask, us->realname())
 		|| ft::match(mask, us->username())
-		|| ft::match(mask, config.servername)
+		|| ft::match(mask, _setting.serverName)
 		|| noParams)
 		{
 			// ---------------------------------------------- //
 
-			UserMode umode = us->umode();
+			UserMode umode = us->userMode();
 
 			if ((ope && !umode.isSet(UserMode::OPERATOR))
 			|| umode.isSet(UserMode::INVISIBLE))
@@ -120,7 +120,7 @@ int IrcServer::who(User &u, const IRC::Message &m)
 
 			msg += "* " + us->username();
 			msg += " " + us->socket()->host();
-			msg += " " + config.servername + " " + us->nickname();
+			msg += " " + _setting.serverName + " " + us->nickname();
 
 			if (!umode.isSet(UserMode::AWAY))
 				msg += " H";
@@ -133,11 +133,11 @@ int IrcServer::who(User &u, const IRC::Message &m)
 
 			// ---------------------------------------------- //
 
-			writeNum(u, IRC::Reply::whoreply(msg));
+			writeNumber(u, IRC::Reply::whoreply(msg));
 		}
 		++userIter;
 	}
 
-	writeNum(u, IRC::Reply::endofwho(mask));
+	writeNumber(u, IRC::Reply::endofwho(mask));
 	return (0);
 }

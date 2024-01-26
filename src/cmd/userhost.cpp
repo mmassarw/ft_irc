@@ -2,24 +2,24 @@
 
 //information about the online status and host information of up to five users.
 
-int IrcServer::userhost(User &u, const IRC::Message &m)
+int Server::userhost(User &u, const IRC::Message &m)
 {
 	if (!u.isRegistered())
-		return (writeNum(u, IRC::Error::notregistered()));
+		return (writeNumber(u, IRC::Error::notregistered()));
 	if (m.params().empty())
-		return (writeNum(u, IRC::Error::needmoreparams(m.command())));
+		return (writeNumber(u, IRC::Error::needmoreparams(m.command())));
 	for (size_t i = 0; i < std::min(m.params().size(), 5UL); ++i)
 	{
-		User *us = network.getByNickname(m.params()[i]);
+		User *us = _network.getUserByNickname(m.params()[i]);
 		if (!us)
 			continue ;
-		UserMode umode = us->umode();
+		UserMode umode = us->userMode();
 		std::string msg;
 		msg += m.params()[i];
 		msg += (umode.isSet(UserMode::OPERATOR) ? "*=" : "=");
 		msg += (umode.isSet(UserMode::AWAY) ? "-" : "+");
 		msg += us->username() + "@" + us->socket()->host();
-		writeNum(u, IRC::Reply::userhostreply(msg));
+		writeNumber(u, IRC::Reply::userhostreply(msg));
 	}
 	return (0);
 }

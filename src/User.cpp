@@ -13,6 +13,11 @@ bool User::isRegistered() const
 	return (!_requirements.flags());
 }
 
+time_t &User::idle()
+{
+	return (_idle);
+}
+
 void User::mark()
 {
     _userMode.set(UserMode::MARK);

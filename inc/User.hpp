@@ -11,6 +11,7 @@ class User : public Connection
         ~User();
 
 		bool					isRegistered() const;
+		time_t					&idle();
 		void					mark();
 		void					unmark();
 		void					setRequirement(UserRequirement::Flag requirement);
@@ -36,6 +37,7 @@ class User : public Connection
 		UserMode				_userMode;
 		size_t					_joinedChannels;
 		std::string				_awayReason;
+		time_t					_idle;
 
     private:
 		std::string         	_label;

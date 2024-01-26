@@ -17,25 +17,25 @@ public:
 
 class Channel
 {
-	typedef std::set<std::string>		InvitationSet;
-	typedef std::map<User*, MemberMode>	MemberMap;
-
-	enum Type
-	{
-		/** '#' */
-		GLOBAL,
-		/** '+' */
-		UNMODERATED
-	};
-
-	enum MaskSetType
-	{
-		BAN_SET,
-		EXCEPTION_SET,
-		INVITATION_SET
-	};
-
     public:
+		typedef std::set<std::string>		InvitationSet;
+		typedef std::map<User*, MemberMode>	MemberMap;
+
+		enum Type
+		{
+			/** '#' */
+			GLOBAL,
+			/** '+' */
+			UNMODERATED
+		};
+
+		enum MaskSetType
+		{
+			BAN_SET,
+			EXCEPTION_SET,
+			INVITATION_SET
+		};
+		
 		Channel(const std::string &name = "");
 		~Channel();
 

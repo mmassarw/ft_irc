@@ -1,5 +1,11 @@
 #include "Network.hpp"
 
+UserInfo::UserInfo(const User &u):
+	nickname(u.nickname()),
+	username(u.username()),
+	host(u.socket()->host()),
+	realname(u.realname()) {}
+
 Network::Network()
 {
 }
@@ -94,4 +100,46 @@ void Network::resetUserReceipt()
 {
 	for (UserMap::const_iterator i = _users.begin(); i != _users.end(); ++i)
 		i->second->unmark();
+}
+
+Network::FnicksSet &Network::fnicks() {
+	return _fnicks;
+}
+
+bool Network::isFnick(const std::string &nick)
+{
+	FnicksSet::iterator it = _fnicks.find(nick);
+	return (it == _fnicks.end() ? false : true);
+}
+
+void Network::addFnick(const std::string &nick)
+{
+	_fnicks.insert(nick);
+}
+
+void Network::addNickToHistory(const User &u)
+{
+	if (_historySize == _history.size())
+		_history.pop_front();
+	_history.push_back(UserInfo(u));
+}
+
+Network::InfoVec Network::getNickHistory(const std::string &nick, size_t count)
+{
+	InfoVec v;
+
+	if (!count)
+		count = -1;
+	for (HistoryList::reverse_iterator rit = _history.rbegin(); rit != _history.rend() && count; ++rit)
+		if (rit->nickname == nick)
+		{
+			--count;
+			v.push_back(*rit);
+		}
+	return v;
+}
+
+void Network::setHistorySize(size_t size)
+{
+	_historySize = size;
 }

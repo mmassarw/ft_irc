@@ -11,6 +11,8 @@ Config::Config(int ac, char **av)
         throw ParseException();
     
     _operators["admin"] = new Operator("admin", "admin123", "*@localhost");
+	_serverHosts.insert("localhost");
+	_serverHosts.insert("ip6-localhost");
 }
 
 Config::~Config() throw()
@@ -43,6 +45,21 @@ std::string Config::motdfile()
 	return ("motd.txt");
 }
 
+int Config::maxConnections()
+{
+	return (5);
+}
+
+int Config::maxChannels()
+{
+	return (180);
+}
+
+int Config::maxMasks()
+{
+	return (4);
+}
+
 time_t Config::ping()
 {
 	return (180);
@@ -53,14 +70,9 @@ time_t Config::pong()
 	return (180);
 }
 
-int Config::maxConnections()
+Config::ServerHostMap Config::serverHosts()
 {
-	return (5);
-}
-
-int Config::maxChannels()
-{
-	return (180);
+	return (_serverHosts);
 }
 
 Config::OperatorMap Config::operators()

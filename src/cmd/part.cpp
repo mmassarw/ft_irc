@@ -2,31 +2,31 @@
 
 //leave one or more IRC channels.
 
-int IrcServer::part(User &u, const IRC::Message &m)
+int Server::part(User &u, const IRC::Message &m)
 {
 	if (!u.isRegistered())
-		return (writeNum(u, IRC::Error::notregistered()));
+		return (writeNumber(u, IRC::Error::notregistered()));
 	if (!m.params().size())
-		return (writeNum(u, IRC::Error::needmoreparams(m.command())));
+		return (writeNumber(u, IRC::Error::needmoreparams(m.command())));
 	Params channels(m.params()[0].split());
 
 	for (Params::const_iterator chan(channels.begin()); chan != channels.end(); ++chan)
 	{
 		Channel *c;
-		if (!chan->isChannel() || !(c = network.getByChannelname(*chan)))
-			writeNum(u, IRC::Error::nosuchchannel(*chan));
+		if (!chan->isChannel() || !(c = _network.getChannelByName(*chan)))
+			writeNumber(u, IRC::Error::nosuchchannel(*chan));
 		else if (!c->findMember(&u))
-			writeNum(u, IRC::Error::notonchannel(*chan));
+			writeNumber(u, IRC::Error::notonchannel(*chan));
 		else
 		{
-			IRC::MessageBuilder msg(u.prefix(), m.command());
+			IRC::MessageBuilder msg(u.label(), m.command());
 			msg << *chan;
 			if (m.params().size() > 1)
 				msg << m.params()[1];
 			c->send(msg.str());
 			c->delMember(&u);
 			if (!c->count())
-				network.remove(c);
+				_network.remove(c);
 		}
 	}
 	return (0);

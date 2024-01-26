@@ -61,12 +61,12 @@ static void pushChange(std::string &changes, const SwitchFlag prevSwitchFlag, co
 	changes.push_back(c);
 }
 
-int IrcServer::mode(User &u, const IRC::Message &m)
+int Server::mode(User &u, const IRC::Message &m)
 {
 	if (!u.isRegistered())
-		return (writeNum(u, IRC::Error::notregistered()));
+		return (writeNumber(u, IRC::Error::notregistered()));
 	if (m.params().empty())
-		return (writeNum(u, IRC::Error::needmoreparams(m.command())));
+		return (writeNumber(u, IRC::Error::needmoreparams(m.command())));
 	const IRC::Param &s = m.params()[0];
 	std::string modes, changes;
 	char mask[128] = {0};
@@ -74,13 +74,13 @@ int IrcServer::mode(User &u, const IRC::Message &m)
 	bool unknownMode = 0, needMoreParams = 0;
 	if (s.isNickname())
 	{
-		if (!network.getByNickname(s))
-			return (writeNum(u, IRC::Error::nosuchnick(s)));
+		if (!_network.getUserByNickname(s))
+			return (writeNumber(u, IRC::Error::nosuchnick(s)));
 		if (u.nickname() != s)
-			return (writeNum(u, IRC::Error::usersdontmatch()));
+			return (writeNumber(u, IRC::Error::usersdontmatch()));
 		if (m.params().size() == 1)
-			return (!writeNum(u, IRC::Reply::umodeis(u.umode().toString())));
-		UserMode um(u.umode());
+			return (!writeNumber(u, IRC::Reply::umodeis(u.userMode().toString())));
+		UserMode um(u.userMode());
 		modes = parseModes(m.params()[1], mask);
 		for (size_t i = 0; i < modes.size(); ++i, prevSwitchFlag = switchFlag)
 		{
@@ -109,27 +109,27 @@ int IrcServer::mode(User &u, const IRC::Message &m)
 			else
 				unknownMode = 1;
 		}
-		u.setUmode(um);
+		u.setUserMode(um);
 		if (changes.size())
 		{
 			IRC::MessageBuilder r(u.nickname(), m.command());
 			r << u.nickname() << changes;
 			const std::string s = r.str();
-			u.writeLine(s);
+			u.sendMessage(s);
 		}
 	}
 	else if (s.isChannel())
 	{
-		Channel *c = network.getByChannelname(s);
+		Channel *c = _network.getChannelByName(s);
 		if (!c)
-			return (writeNum(u, IRC::Error::nosuchchannel(s)));
+			return (writeNumber(u, IRC::Error::nosuchchannel(s)));
 		if (c->type() == Channel::UNMODERATED)
-			return (writeNum(u, IRC::Error::nochanmodes(s)));
+			return (writeNumber(u, IRC::Error::nochanmodes(s)));
 		const MemberMode *mm = c->findMember(&u);
 		if (m.params().size() == 1)
 		{
 			const ChannelMode &m = c->mode();
-			IRC::MessageBuilder res(config.servername, IRC::Reply::channelmodeis(s, m.toString()), u.nickname());
+			IRC::MessageBuilder res(_setting.serverName, IRC::Reply::channelmodeis(s, m.toString()), u.nickname());
 			if (mm)
 			{
 				if (m.isSet(ChannelMode::KEY))
@@ -141,13 +141,13 @@ int IrcServer::mode(User &u, const IRC::Message &m)
 					res << ss.str();
 				}
 			}
-			u.writeLine(res.str());
+			u.sendMessage(res.str());
 			return (0);
 		}
 		if (!mm)
-			return (writeNum(u, IRC::Error::notonchannel(s)));
+			return (writeNumber(u, IRC::Error::notonchannel(s)));
 		if (!mm->isSet(MemberMode::OPERATOR))
-			return (writeNum(u, IRC::Error::chanoprisneeded(s)));
+			return (writeNumber(u, IRC::Error::chanoprisneeded(s)));
 		std::list<std::string> changeParams;
 		ChannelMode cm(c->mode());
 		size_t argi = 2; // current index for modeparams
@@ -168,22 +168,22 @@ int IrcServer::mode(User &u, const IRC::Message &m)
 					{
 						const MaskSet &set = c->masks(Channel::BAN_SET);
 						for (MaskSet::const_iterator i = set.begin(); i != set.end(); ++i)
-							writeNum(u, IRC::Reply::banlist(c->name(), *i));
-						writeNum(u, IRC::Reply::endofbanlist(c->name()));
+							writeNumber(u, IRC::Reply::banlist(c->name(), *i));
+						writeNumber(u, IRC::Reply::endofbanlist(c->name()));
 					}
 					else if (f == ChannelMode::EXCEPTION_MASK)
 					{
 						const MaskSet &set = c->masks(Channel::EXCEPTION_SET);
 						for (MaskSet::const_iterator i = set.begin(); i != set.end(); ++i)
-							writeNum(u, IRC::Reply::exceptlist(c->name(), *i));
-						writeNum(u, IRC::Reply::endofexceptlist(c->name()));
+							writeNumber(u, IRC::Reply::exceptlist(c->name(), *i));
+						writeNumber(u, IRC::Reply::endofexceptlist(c->name()));
 					}
 					else // if (f == ChannelMode::INVITATION_MASK)
 					{
 						const MaskSet &set = c->masks(Channel::INVITATION_SET);
 						for (MaskSet::const_iterator i = set.begin(); i != set.end(); ++i)
-							writeNum(u, IRC::Reply::invitelist(c->name(), *i));
-						writeNum(u, IRC::Reply::endofinvitelist(c->name()));
+							writeNumber(u, IRC::Reply::invitelist(c->name(), *i));
+						writeNumber(u, IRC::Reply::endofinvitelist(c->name()));
 					}
 				}
 				else
@@ -229,7 +229,7 @@ int IrcServer::mode(User &u, const IRC::Message &m)
 							{
 								if (cm.isSet(f))
 								{
-									writeNum(u, IRC::Error::keyset(s));
+									writeNumber(u, IRC::Error::keyset(s));
 									continue ;
 								}
 								else if (!arg.isKey())
@@ -257,7 +257,7 @@ int IrcServer::mode(User &u, const IRC::Message &m)
 								else // if (f == ChannelMode::INVITATION_MASK)
 									type = Channel::INVITATION_SET;
 								const MaskSet &set = c->masks(type);
-								if (set.size() == config.maxMasks || set.find(arg) != set.end())
+								if (set.size() == _setting.maxMasks || set.find(arg) != set.end())
 									continue ;
 								c->addMask(type, arg);
 								changeParams.push_back(arg);
@@ -282,16 +282,16 @@ int IrcServer::mode(User &u, const IRC::Message &m)
 					unknownMode = 1;
 					continue ;
 				}
-				User *user = network.getByNickname(arg);
+				User *user = _network.getUserByNickname(arg);
 				if (!user)
 				{
-					writeNum(u, IRC::Error::nosuchnick(arg));
+					writeNumber(u, IRC::Error::nosuchnick(arg));
 					continue ;
 				}
 				MemberMode *umm = c->findMember(user);
 				if (!umm)
 				{
-					writeNum(u, IRC::Error::usernotinchannel(arg, s));
+					writeNumber(u, IRC::Error::usernotinchannel(arg, s));
 					continue ;
 				}
 				if (switchFlag == UNSET)
@@ -325,10 +325,10 @@ int IrcServer::mode(User &u, const IRC::Message &m)
 		}
 	}
 	else
-		return (writeNum(u, IRC::Error::nosuchnick(s)));
+		return (writeNumber(u, IRC::Error::nosuchnick(s)));
 	if (needMoreParams)
-		writeNum(u, IRC::Error::needmoreparams(m.command()));
+		writeNumber(u, IRC::Error::needmoreparams(m.command()));
 	else if (unknownMode)
-		writeNum(u, IRC::Error::umodeunknownflag());
+		writeNumber(u, IRC::Error::umodeunknownflag());
 	return (0);
 }
