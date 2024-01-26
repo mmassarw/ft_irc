@@ -15,10 +15,20 @@ class Network
 		Network();
 		~Network() throw();
 
-		void			add(User *user);
-		void			add(Channel *channel);
-		void			clear() throw();
-		Connection		*getConnBySocket(tcp::TcpSocket *socket);
+		const ChannelMap	&channels() const;
+		const ConnectionMap	&connections() const;
+		const UserMap		&users() const;
+		const ServiceMap	&services() const;
+		void				add(User *user);
+		void				add(Channel *channel);
+		void				clear() throw();
+		Connection			*getConnBySocket(tcp::TcpSocket *socket);
+		User				*getUserByNickname(const std::string &nickname);
+		User				*getUserByServiceName(const std::string &serviceName);
+		Channel				*getChannelByName(const std::string &channelName);
+		void				remove(User *user) throw();
+		void				remove(const Channel *chan) throw();
+		void				resetUserReceipt();
 		
 	private:
 		ConnectionMap	_connections;

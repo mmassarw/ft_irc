@@ -1,6 +1,6 @@
 #include "Connection.hpp"
 
-Connection::Connection(tcp::TcpSocket *socket, Type type) : _socket(socket), _type(type)
+Connection::Connection(tcp::TcpSocket *socket, Type type, unsigned hopcount) : _socket(socket), _type(type), _hopcount(hopcount)
 {
 }
 
@@ -16,6 +16,11 @@ Connection::Type Connection::type() const
 tcp::TcpSocket *Connection::socket() const
 {
     return (_socket);
+}
+
+unsigned Connection::hopcount() const
+{
+	return (_hopcount);
 }
 
 void Connection::setType(const Type type)

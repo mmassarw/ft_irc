@@ -68,6 +68,13 @@
         "stack": "cpp",
         "map": "cpp",
         "__tree": "cpp",
-        "*.tpp": "cpp"
+        "*.tpp": "cpp",
+        "__bits": "cpp",
+        "charconv": "cpp",
+        "clocale": "cpp",
+        "compare": "cpp",
+        "concepts": "cpp",
+        "variant": "cpp",
+        "__verbose_abort": "cpp"
     }
 }

@@ -25,6 +25,7 @@ class Config
         std::string 		serverPass();
         std::string 		serverDesc();
         std::string 		tcpPort();
+		std::string			motdfile();
         time_t      		ping();
         time_t 				pong();
         int 				maxConnections();

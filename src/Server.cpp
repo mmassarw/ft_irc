@@ -1,14 +1,55 @@
 #include "Server.hpp"
+#include "libft.hpp"
 #include <iostream>
 
 const size_t Server::maxLineSize = 2048;
 
-Server::Server(Config &config, bool _autoInit) : _state(ACTIVE)
+Server::Server(Config &config, bool _autoInit) : _state(ACTIVE), _creation(::time(NULL))
 {
+    _creationDate = ft::toDate(_creation, "%a %b %d %Y at %H:%M:%S %Z");
+    
     _setting.serverName = config.serverName();
     _setting.serverPass = config.serverPass();
     _setting.tcpPort = config.tcpPort();
     _setting.operators = config.operators();
+    if (config.motdfile().size())
+		ft::fileToData(config.motdfile(), _setting.motd, 80);
+    
+    _commands[User::SERVICE]["KILL"] = &Server::kill;
+	_commands[User::SERVICE]["SERVICE"] = &Server::nick;
+	_commands[User::SERVICE]["SERVICE"] = &Server::notice;
+	_commands[User::SERVICE]["SERVICE"] = &Server::oper;
+	_commands[User::SERVICE]["SERVICE"] = &Server::pass;
+	_commands[User::SERVICE]["SERVICE"] = &Server::ping;
+	_commands[User::SERVICE]["SERVICE"] = &Server::pong;
+	_commands[User::SERVICE]["PRIVMSG"] = &Server::privmsg;
+	_commands[User::SERVICE]["QUIT"] = &Server::quit;
+	_commands[User::SERVICE]["SERVICE"] = &Server::service;
+	_commands[User::SERVICE]["SERVLIST"] = &Server::servlist;
+	_commands[User::SERVICE]["SQUERY"] = &Server::squery;
+	_commands[User::SERVICE]["USER"] = &Server::user;
+	_commands[User::SERVICE]["WHO"] = &Server::who;
+	_commands[User::SERVICE]["WHOIS"] = &Server::whois;
+	_commands[User::SERVICE]["WHOWAS"] = &Server::whowas;
+	_commands[User::USER]["AWAY"] = &Server::away;
+	_commands[User::USER]["DIE"] = &Server::die;
+	_commands[User::USER]["INFO"] = &Server::info;
+	_commands[User::USER]["INVITE"] = &Server::invite;
+	_commands[User::USER]["JOIN"] = &Server::join;
+	_commands[User::USER]["KICK"] = &Server::kick;
+	_commands[User::USER]["LIST"] = &Server::list;
+	_commands[User::USER]["LUSERS"] = &Server::lusers;
+	_commands[User::USER]["MODE"] = &Server::mode;
+	_commands[User::USER]["MOTD"] = &Server::motd;
+	_commands[User::USER]["NAMES"] = &Server::names;
+	_commands[User::USER]["PART"] = &Server::part;
+	_commands[User::USER]["REHASH"] = &Server::rehash;
+	_commands[User::USER]["RESTART"] = &Server::restart;
+	_commands[User::USER]["STATS"] = &Server::stats;
+	_commands[User::USER]["TIME"] = &Server::time;
+	_commands[User::USER]["TOPIC"] = &Server::topic;
+	_commands[User::USER]["USERHOST"] = &Server::userhost;
+	_commands[User::USER]["VERSION"] = &Server::version;
 
     _tcpSrv.listen(_setting.tcpPort.c_str());
     if (_autoInit)
@@ -60,16 +101,16 @@ void Server::run()
                 {
                     if (!socket->readLine(line))
                     {
-                        std::cout << "Remote host closed connection" << std::endl;
+                        disconnect(socket, "Remote host closed connection");
                         continue;
                     }
                     if (socket->readBufSize() > maxLineSize)
                     {
-                        std::cout << "Socket's buffer size has exceed the limit" << std::endl;
+                        disconnect(socket, "Socket's buffer size has exceed the limit");
+                        continue ;
                     }
                     if (line.empty())
 						continue ;
-                    std::cout << line;
                     exec(_network.getConnBySocket(socket), IRC::Message(line));
                 }
             }
@@ -89,10 +130,104 @@ void Server::writeMessage(User &user, const std::string &command, const std::str
 	user.sendMessage((IRC::MessageBuilder(_setting.serverName, command) << user.nickname() << content).str());
 }
 
+int Server::writeNumber(User &user, const  IRC::Numeric &response)
+{
+	user.sendMessage(IRC::MessageBuilder(_setting.serverName, response, user.nickname()).str());
+	return (-1);
+}
+
+void Server::disconnect(tcp::TcpSocket *socket, const std::string &reason) throw()
+{
+	Connection *conn = _network.getConnBySocket(socket);
+	disconnect(*static_cast<User *>(conn), reason);
+}
+
+
+void Server::disconnect(User &user, const std::string &reason, bool notifyUserQuit) throw()
+{
+	const std::string quitMessage = (IRC::MessageBuilder(user.label(), "QUIT") << reason).str();
+	std::stringstream errorReason;
+
+	if (user.joinedChannels())
+	{
+		_network.resetUserReceipt();
+		const Network::ChannelMap &channels = _network.channels();
+		Network::ChannelMap::const_iterator i = channels.begin();
+		while (i != channels.end())
+		{
+			Channel *channel = i->second;
+			++i;
+			if (channel->findMember(&user))
+			{
+				channel->delMember(&user);
+				if (!channel->count())
+					_network.remove(channel);
+				else
+				{
+					channel->send(quitMessage, NULL, true);
+					channel->markAllMembers();
+				}
+			}
+		}
+	}
+	errorReason << "Closing Link: " << user.socket()->host();
+	if (notifyUserQuit)
+		errorReason << " (Client Quit)";
+	else
+		errorReason << " (" << reason << ')';
+	writeError(user.socket(), errorReason.str());
+	_network.remove(&user);
+	std::cout << user.socket()->host() << ' ' << errorReason.str() << std::endl;
+}
+
 int Server::exec(Connection *sender, const IRC::Message &msg)
 {
-    (void)sender;
-    (void)msg;
-    return 0;
+    if (!msg.isValid())
+		return (-1);
+    
+    User &user = *static_cast<User*>(sender);
+    CmdTypeMap::const_iterator i = _commands.find(user.type());
+    if (i == _commands.end())
+    {
+        std::cout << "Command type not defined!" << std::endl;
+        return 1;
+    }
+    CmdMap::const_iterator j = i->second.find(msg.command());
+    if (j == i->second.end())
+        return (writeNumber(user, IRC::Error::unknowncommand(msg.command())));
+    
+    int commandStatus = (this->*(j->second))(user, msg);
+    CommandStats &stats = _commandsStats[msg.command()];
+	++stats.count;
+	stats.byteCount += msg.entry().size();
+	return (commandStatus);
+}
 
+void Server::writeMotd(User &user)
+{
+	if (!_setting.motd.size())
+	{
+		writeNumber(user, IRC::Error::nomotd());
+		return ;
+	}
+	writeNumber(user, IRC::Reply::motdstart(_setting.serverName));
+	for (size_t i = 0; i < _setting.motd.size(); ++i)
+		writeNumber(user, IRC::Reply::motd(_setting.motd[i]));
+	writeNumber(user, IRC::Reply::endofmotd());
+}
+
+void Server::writeWelcome(User &user)
+{
+	writeNumber(user, (user.type() == User::USER ? IRC::Reply::welcome(user.label()) : IRC::Reply::youreservice(user.nickname())));
+	writeNumber(user, IRC::Reply::yourhost(_setting.serverName, _version));
+	if (user.type() == User::USER)
+		writeNumber(user, IRC::Reply::created(_creationDate));
+	writeNumber(user, IRC::Reply::myinfo(_setting.serverName, _version, "aiorsw", "IObeiklmnopstv"));
+	if (user.type() == User::USER)
+		writeMotd(user);
+}
+
+void Server::writeError(tcp::TcpSocket *socket, std::string reason)
+{
+	socket->writeLine((IRC::MessageBuilder(_setting.serverName, "ERROR") << reason).str());
 }

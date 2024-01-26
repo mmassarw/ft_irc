@@ -38,6 +38,11 @@ std::string Config::tcpPort()
 	return (_tcpPort);
 }
 
+std::string Config::motdfile()
+{
+	return ("motd.txt");
+}
+
 time_t Config::ping()
 {
 	return (180);
