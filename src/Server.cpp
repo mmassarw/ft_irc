@@ -91,7 +91,7 @@ void Server::run()
             _state = SHUTDOWN;
             return ;
         }
-
+		closeLostConnections();
         tcp::TcpSocket *newSocket;
         while ((newSocket = _tcpSrv.nextNewConnection()))
 		{
@@ -152,7 +152,6 @@ void Server::disconnect(tcp::TcpSocket *socket, const std::string &reason) throw
 	disconnect(*static_cast<User *>(conn), reason);
 }
 
-
 void Server::disconnect(User &user, const std::string &reason, bool notifyUserQuit) throw()
 {
 	const std::string quitMessage = (IRC::MessageBuilder(user.label(), "QUIT") << reason).str();
@@ -187,6 +186,7 @@ void Server::disconnect(User &user, const std::string &reason, bool notifyUserQu
 		errorReason << " (" << reason << ')';
 	writeError(user.socket(), errorReason.str());
 	_network.remove(&user);
+	_network.addLostConn(&user);
 	std::cout << user.socket()->host() << ' ' << errorReason.str() << std::endl;
 }
 
@@ -240,6 +240,20 @@ void Server::writeWelcome(User &user)
 void Server::writeError(tcp::TcpSocket *socket, std::string reason)
 {
 	socket->writeLine((IRC::MessageBuilder(_setting.serverName, "ERROR") << reason).str());
+}
+
+void Server::closeLostConnections()
+{
+	Connection *conn;
+
+	while ((conn = _network.nextLostConn()))
+	{
+		try {
+			conn->socket()->sendBuffer();
+		} catch(std::exception &e) {}
+		_tcpSrv.disconnect(conn->socket());
+		delete conn;
+	}
 }
 
 void Server::pingpongProbe()

@@ -80,6 +80,7 @@ class Server
 		void			writeMotd(User &user);
 		void			writeError(tcp::TcpSocket *socket, std::string reason);
 		void 			pingpongProbe();
+		void 			closeLostConnections();
 
 		int				away(User &sender, const IRC::Message &msg);
 		int				die(User &sender, const IRC::Message &msg);

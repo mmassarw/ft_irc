@@ -25,6 +25,7 @@ class Network
 		typedef std::map<std::string, Channel *>			ChannelMap;
 
 		typedef std::set<std::string>						FnicksSet;
+		typedef std::list<Connection *>						LostConnList;
 		typedef std::vector<UserInfo>						InfoVec;
 		typedef std::list<UserInfo>							HistoryList;
 		
@@ -48,6 +49,8 @@ class Network
 		void				resetUserReceipt();
 		bool				isFnick(const std::string &nick);
 		void				addFnick(const std::string &nick);
+		void				addLostConn(Connection *);
+		Connection			*nextLostConn();
 		void				addNickToHistory(const User &user);
 		InfoVec				getNickHistory(const std::string &nick, size_t count);
 		void				setHistorySize(size_t size);
@@ -58,6 +61,7 @@ class Network
 		ServiceMap		_services;
 		ChannelMap		_channels;
 		FnicksSet		_fnicks;
+		LostConnList	_lostConnections;
 		HistoryList		_history;
 		size_t			_historySize;
 };

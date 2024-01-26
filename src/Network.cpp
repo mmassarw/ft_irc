@@ -117,6 +117,20 @@ void Network::addFnick(const std::string &nick)
 	_fnicks.insert(nick);
 }
 
+void Network::addLostConn(Connection *z)
+{
+	_lostConnections.push_back(z);
+}
+
+Connection *Network::nextLostConn()
+{
+	if (_lostConnections.empty())
+		return NULL;
+	Connection *conn = _lostConnections.front();
+	_lostConnections.pop_front();
+	return conn;
+}
+
 void Network::addNickToHistory(const User &u)
 {
 	if (_historySize == _history.size())
