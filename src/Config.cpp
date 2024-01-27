@@ -45,6 +45,11 @@ std::string Config::motdfile()
 	return ("");
 }
 
+size_t Config::historySize()
+{
+	return (5000);
+}
+
 int Config::maxConnections()
 {
 	return (5);

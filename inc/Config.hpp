@@ -30,6 +30,7 @@ class Config
 		std::string			motdfile();
         time_t      		ping();
         time_t 				pong();
+		size_t 				historySize();
         int 				maxConnections();
         int 				maxChannels();
 		int 				maxMasks();

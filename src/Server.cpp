@@ -23,6 +23,7 @@ Server::Server(Config &config, bool _autoInit) : _state(ACTIVE), _creation(::tim
 	_setting.ping = config.ping();
 	_setting.pong = config.pong();
 	_setting.serverHosts = config.serverHosts();
+	_setting.historySize = config.historySize();
     if (config.motdfile().size())
 		ft::fileToData(config.motdfile(), _setting.motd, 80);
     
@@ -90,6 +91,7 @@ Server::~Server()
 void Server::init()
 {
     _tcpSrv.setMaxConnections(_setting.maxConnections);
+	_network.setHistorySize(_setting.historySize);
 }
 
 Server::State Server::state() const
