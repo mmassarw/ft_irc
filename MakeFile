@@ -6,14 +6,14 @@
 #    By: fkhan <fkhan@student.42abudhabi.ae>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/01 18:08:21 by fkhan             #+#    #+#              #
-#    Updated: 2024/01/21 19:06:34 by fkhan            ###   ########.fr        #
+#    Updated: 2024/01/27 18:49:14 by fkhan            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		= ircserv
 
 CXX			= c++
-CXXFLAGS	= -Wall -Wextra -Werror -std=c++98 -g
+CXXFLAGS	= -Wall -Wextra -Werror -std=c++98 -g -fsanitize=address
 INCFLAGS	= -I$(INC_DIR) -I$(INC_CMD_DIR) -I$(LIBFT_INC) -I$(LIBTCP_INC) -I$(LIBIRC_INC)
 LIBFLAGS	= -L ./$(LIBFT_DIR) -lft -L ./$(LIBTCP_DIR) -ltcp -L ./$(LIBIRC_DIR) -lIRC
 

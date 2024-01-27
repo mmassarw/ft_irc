@@ -42,6 +42,23 @@ Server::Server(Config &config, bool _autoInit) : _state(ACTIVE), _creation(::tim
 	_commands[User::SERVICE]["WHO"] = &Server::who;
 	_commands[User::SERVICE]["WHOIS"] = &Server::whois;
 	_commands[User::SERVICE]["WHOWAS"] = &Server::whowas;
+
+	_commands[User::USER]["KILL"] = &Server::kill;
+	_commands[User::USER]["NICK"] = &Server::nick;
+	_commands[User::USER]["NOTICE"] = &Server::notice;
+	_commands[User::USER]["OPER"] = &Server::oper;
+	_commands[User::USER]["PASS"] = &Server::pass;
+	_commands[User::USER]["PING"] = &Server::ping;
+	_commands[User::USER]["PONG"] = &Server::pong;
+	_commands[User::USER]["PRIVMSG"] = &Server::privmsg;
+	_commands[User::USER]["QUIT"] = &Server::quit;
+	_commands[User::USER]["SERVICE"] = &Server::service;
+	_commands[User::USER]["SERVLIST"] = &Server::servlist;
+	_commands[User::USER]["SQUERY"] = &Server::squery;
+	_commands[User::USER]["USER"] = &Server::user;
+	_commands[User::USER]["WHO"] = &Server::who;
+	_commands[User::USER]["WHOIS"] = &Server::whois;
+	_commands[User::USER]["WHOWAS"] = &Server::whowas;
 	_commands[User::USER]["AWAY"] = &Server::away;
 	_commands[User::USER]["DIE"] = &Server::die;
 	_commands[User::USER]["INFO"] = &Server::info;
@@ -121,7 +138,6 @@ void Server::run()
                     }
                     if (line.empty())
 						continue ;
-					std::cout << line;
                     exec(_network.getConnBySocket(socket), IRC::Message(line));
                 }
             }
@@ -203,7 +219,6 @@ int Server::exec(Connection *sender, const IRC::Message &msg)
         std::cout << "Command type not defined!" << std::endl;
         return 1;
     }
-	std::cout << "debug: " + msg.command() << " " << i->second.size() << std::endl;
     CmdMap::const_iterator j = i->second.find(msg.command());
     if (j == i->second.end())
         return (writeNumber(user, IRC::Error::unknowncommand(msg.command())));
