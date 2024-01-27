@@ -203,7 +203,7 @@ int Server::exec(Connection *sender, const IRC::Message &msg)
         std::cout << "Command type not defined!" << std::endl;
         return 1;
     }
-	std::cout << "debug: " + msg.command() << std::endl;
+	std::cout << "debug: " + msg.command() << " " << i->second.size() << std::endl;
     CmdMap::const_iterator j = i->second.find(msg.command());
     if (j == i->second.end())
         return (writeNumber(user, IRC::Error::unknowncommand(msg.command())));
