@@ -3,6 +3,10 @@
 #include <iostream>
 #include <map>
 #include <set>
+#include <cstdlib>
+#include <cstring>
+#include <cctype>
+#include <stdexcept>
 
 struct Operator
 {
@@ -45,4 +49,7 @@ class Config
 		std::string			_tcpPort;
 		OperatorMap 		_operators;
 		ServerHostMap 		_serverHosts;
+
+		int checkPort(char *port);
+   		int checkPass(std::string pass);
 };
