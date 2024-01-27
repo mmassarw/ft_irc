@@ -42,7 +42,7 @@ std::string Config::tcpPort()
 
 std::string Config::motdfile()
 {
-	return ("motd.txt");
+	return ("");
 }
 
 int Config::maxConnections()
