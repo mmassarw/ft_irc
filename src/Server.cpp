@@ -121,6 +121,7 @@ void Server::run()
                     }
                     if (line.empty())
 						continue ;
+					std::cout << line;
                     exec(_network.getConnBySocket(socket), IRC::Message(line));
                 }
             }
