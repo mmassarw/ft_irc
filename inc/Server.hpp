@@ -15,6 +15,7 @@ struct ServerSetting
     std::string             	serverPass;
 	std::string					serverDesc;
     std::string             	tcpPort;
+	size_t						historySize;
     int                     	maxConnections;
 	size_t                     	maxChannels;
 	size_t						maxMasks;
